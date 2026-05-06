@@ -10,7 +10,7 @@
   </p>
 
   <p align="center">
-    <a href="https://rush1patel.github.io/Grandmaster-OS/">
+    <a href="https://grandmaster-os.onrender.com">
       <img src="https://img.shields.io/badge/Try_It_Out-Live_Demo-2ea44f?style=for-the-badge&logo=googlechrome&logoColor=white&shadow=1" alt="Live Demo" />
     </a>
   </p>
