@@ -17,6 +17,7 @@
             'pop': 'pop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards',
             'pulse-glow': 'pulse-glow 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
             'smart-slide': 'smart-slide 3.5s infinite cubic-bezier(0.4, 0, 0.2, 1)',
+            'slide-up': 'slide-up 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards',
           },
           keyframes: {
             float: {
@@ -28,13 +29,12 @@
               '100%': { opacity: '1' },
             },
             'pop': {
-              '0%': { transform: 'translate(-50%, -50%) scale(0)' },
-              '80%': { transform: 'translate(-50%, -50%) scale(1.1)' },
-              '100%': { transform: 'translate(-50%, -50%) scale(1)' },
+              '0%': { transform: 'scale(0.8)', opacity: '0' },
+              '100%': { transform: 'scale(1)', opacity: '1' },
             },
-            'pulse-glow': {
-              '0%, 100%': { opacity: 1 },
-              '50%': { opacity: .5 },
+            'slide-up': {
+              '0%': { transform: 'translateY(20px)', opacity: '0' },
+              '100%': { transform: 'translateY(0)', opacity: '1' },
             },
             'smart-slide': {
               '0%': { transform: 'translateX(-350px) scale(0.3)', opacity: '0' },
@@ -50,16 +50,82 @@
 
   <!-- Custom Styles for Scrollbar & Animations -->
   <style>
-    body { background-color: #000000; }
+    body { background-color: #f1f1f1; } 
     .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
     .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
-    .custom-scrollbar::-webkit-scrollbar-thumb { background: #555; border-radius: 10px; }
+    .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(128,128,128,0.4); border-radius: 10px; }
     .animate-in { animation: fade-in 0.4s ease-out forwards; }
     
-    /* Hyper-smooth piece and eval animations - Highly Optimized */
-    .piece-animate { transition: left 0.1s ease-out, top 0.1s ease-out, transform 0.1s ease-out; }
+    /* Hyper-smooth piece and eval animations */
+    .piece-animate { transition: left 0.15s ease-out, top 0.15s ease-out, transform 0.1s ease-out; }
     .piece-drag { transition: none !important; z-index: 50; }
-    .eval-animate { transition: height 0.15s ease-out; }
+    .eval-animate { transition: height 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+
+    /* Custom Bouncing Maze Loader */
+    .game-loader {
+      width: 70px; height: 40px; outline: 2px solid var(--track-color);
+      background:
+        radial-gradient(farthest-side, var(--ball1) 90%, #0000) 0 0/8px 8px no-repeat,
+        radial-gradient(farthest-side, var(--ball2) 90%, #0000) 0 0/8px 8px no-repeat,
+        linear-gradient(var(--track-color) 0 0) 50%/10px 100% no-repeat,
+        conic-gradient(from  90deg at 10px 10px, #0000 90deg, var(--track-bg) 0),
+        conic-gradient(from -90deg at 60px 30px, #0000 90deg, var(--track-bg) 0);
+      animation: gameLoaderAnim 2s infinite; box-shadow: 0 0 25px var(--glow-color); transform: scale(1.6);
+    }
+    @keyframes gameLoaderAnim {
+      0%    {background-position:50%  100%,0    0   ,50%}
+      12.5% {background-position:0    100%,50%  0   ,50%}
+      25%   {background-position:0    0   ,50%  100%,50%}
+      37.5% {background-position:50%  0   ,100% 100%,50%}
+      50%   {background-position:50%  100%,100% 0   ,50%}
+      62.5% {background-position:100% 100%,50%  0   ,50%}
+      75%   {background-position:100% 0   ,50%  100%,50%}
+      82.5% {background-position:50%  0   ,0    100%,50%}
+      100%  {background-position:50%  100%,0    0   ,50%}
+    }
+
+    .theme-loader-bar {
+      width: 140px;
+      height: 14px;
+      border-radius: 20px;
+      border: 2px solid var(--accent-color);
+      position: relative;
+      overflow: hidden;
+      margin: 0 auto;
+    }
+    .theme-loader-bar::before {
+      content: "";
+      position: absolute;
+      margin: 2px;
+      inset: 0 100% 0 0;
+      border-radius: inherit;
+      background: var(--accent-color);
+      animation: fill-bar-forward 4.5s linear forwards;
+    }
+    @keyframes fill-bar-forward {
+        100% { inset: 0 0 0 0; }
+    }
+
+    /* Custom Piece Evaluation Target Loader */
+    .piece-loader {
+      width: 16px; height: 16px; border: 2.5px dotted var(--p-color1); border-style: solid solid dotted dotted;
+      border-radius: 50%; display: inline-block; position: relative; box-sizing: border-box; animation: pieceRotation 2s linear infinite;
+    }
+    .piece-loader::after {
+      content: ''; box-sizing: border-box; position: absolute; left: 0; right: 0; top: 0; bottom: 0; margin: auto;
+      border: 2px dotted var(--p-color2); border-style: solid solid dotted; width: 8px; height: 8px; border-radius: 50%;
+      animation: pieceRotationBack 1s linear infinite; transform-origin: center center;
+    }
+    @keyframes pieceRotation { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } } 
+    @keyframes pieceRotationBack { 0% { transform: rotate(0deg); } 100% { transform: rotate(-360deg); } }
+
+    /* Custom Slider Range styling */
+    input[type=range] { -webkit-appearance: none; width: 100%; background: transparent; }
+    input[type=range]::-webkit-slider-thumb {
+      -webkit-appearance: none; height: 20px; width: 20px; border-radius: 50%; background: var(--accent-color);
+      cursor: pointer; margin-top: -8px; box-shadow: 0 0 10px rgba(0,0,0,0.5);
+    }
+    input[type=range]::-webkit-slider-runnable-track { width: 100%; height: 6px; cursor: pointer; background: rgba(128,128,128,0.3); border-radius: 4px; }
   </style>
 
   <!-- Import Maps for ES Modules -->
@@ -87,26 +153,28 @@
     import { 
       Search, Brain, Target, ChevronRight, Loader2, 
       ChevronLeft, ChevronsLeft, ChevronsRight, Settings, 
-      Moon, Sun, Clock, RefreshCcw, Activity, 
+      Moon, Sun, Clock, RefreshCcw, Activity, Gamepad2,
       Zap, Shield, Swords, Flame, Maximize2, Minimize2,
-      CheckCircle, XCircle, Heart, Github, Cpu, CloudLightning, Crosshair, AlertTriangle, ArrowUpDown
+      CheckCircle, XCircle, Heart, Github, Cpu, CloudLightning, 
+      Crosshair, AlertTriangle, ArrowUpDown, Undo2, Lightbulb, X, Palette, Layout, FileText,
+      Trophy, Skull, Minus
     } from 'lucide-react';
 
     const STOCKFISH_URL = "https://cdnjs.cloudflare.com/ajax/libs/stockfish.js/10.0.2/stockfish.js";
 
     // --- Dynamic Themes ---
     const THEMES = {
+      light: { 
+        bg: 'bg-[#f8f9fa]', panel: 'bg-white', panelInner: 'bg-[#f1f3f5]', 
+        text: 'text-[#212529]', textMuted: 'text-[#868e96]', border: 'border-black/5', 
+        accent: 'bg-[#81b64c]', accentText: 'text-[#81b64c]', 
+        evalTop: 'rgba(255,255,255,0.9)', evalBot: 'rgba(50,50,50,0.8)' 
+      },
       dark: { 
         bg: 'bg-[#000000]', panel: 'bg-[#0a0a0a]', panelInner: 'bg-[#111111]', 
         text: 'text-[#e3e3e3]', textMuted: 'text-[#666666]', border: 'border-white/5', 
         accent: 'bg-[#81b64c]', accentText: 'text-[#81b64c]', 
         evalTop: 'rgba(255,255,255,0.9)', evalBot: 'rgba(40,40,40,0.8)' 
-      },
-      light: { 
-        bg: 'bg-[#f1f1f1]', panel: 'bg-white', panelInner: 'bg-[#e5e5e5]', 
-        text: 'text-[#312e2b]', textMuted: 'text-[#8c8a88]', border: 'border-black/10', 
-        accent: 'bg-[#81b64c]', accentText: 'text-[#81b64c]', 
-        evalTop: 'rgba(255,255,255,0.9)', evalBot: 'rgba(50,50,50,0.8)' 
       },
       neon: { 
         bg: 'bg-[#050508]', panel: 'bg-[#0b0c10]', panelInner: 'bg-[#101218]', 
@@ -120,19 +188,22 @@
       green: { light: 'bg-[#ebecd0]', dark: 'bg-[#739552]' },
       wood: { light: 'bg-[#e6d3a8]', dark: 'bg-[#af753a]' },
       neon: { light: 'bg-[#1a1a2e]', dark: 'bg-[#0f3460]' },
-      monochrome: { light: 'bg-[#e2e2e2]', dark: 'bg-[#888888]' }
+      monochrome: { light: 'bg-[#e2e2e2]', dark: 'bg-[#888888]' },
+      ocean: { light: 'bg-[#cddce8]', dark: 'bg-[#6792b0]' }
     };
 
+    const PIECE_SETS = ['neo', 'wood', 'glass', 'gothic', 'bases', 'icy_sea'];
+
     const MOVE_TYPES = {
-      SIGMA:     { label: 'Sigma', id: 'sigma', color: '#1baca6', bg: 'bg-[#1baca6]', icon: '!!' },
-      AWESOME:   { label: 'Awesome', id: 'awesome', color: '#5b8baf', bg: 'bg-[#5b8baf]', icon: '!' },
+      SIGMA:     { label: 'Brilliant', id: 'sigma', color: '#1baca6', bg: 'bg-[#1baca6]', icon: '!!' },
+      AWESOME:   { label: 'Great', id: 'awesome', color: '#5b8baf', bg: 'bg-[#5b8baf]', icon: '!' },
       BEST:      { label: 'Best', id: 'best', color: '#81b64c', bg: 'bg-[#81b64c]', icon: '★' },
-      NICE:      { label: 'Nice', id: 'nice', color: '#96bc4b', bg: 'bg-[#96bc4b]', icon: '↑' },
-      OK:        { label: 'Ok', id: 'ok', color: '#96aaaa', bg: 'bg-[#96aaaa]', icon: '✓' },
-      THEORETICAL:{ label: 'Theoretical', id: 'theoretical', color: '#a88865', bg: 'bg-[#a88865]', icon: '📖' },
-      STRANGE:   { label: 'Strange', id: 'strange', color: '#f3ae16', bg: 'bg-[#f3ae16]', icon: '?!' },
-      BAD:       { label: 'Bad', id: 'bad', color: '#e58f2a', bg: 'bg-[#e58f2a]', icon: '?' },
-      CLOWN:     { label: 'Clown', id: 'clown', color: '#ca3431', bg: 'bg-[#ca3431]', icon: '??' },
+      NICE:      { label: 'Excellent', id: 'nice', color: '#96bc4b', bg: 'bg-[#96bc4b]', icon: '↑' },
+      OK:        { label: 'Good', id: 'ok', color: '#96aaaa', bg: 'bg-[#96aaaa]', icon: '✓' },
+      THEORETICAL:{ label: 'Book', id: 'theoretical', color: '#a88865', bg: 'bg-[#a88865]', icon: '📖' },
+      STRANGE:   { label: 'Inaccuracy', id: 'strange', color: '#f3ae16', bg: 'bg-[#f3ae16]', icon: '?!' },
+      BAD:       { label: 'Mistake', id: 'bad', color: '#e58f2a', bg: 'bg-[#e58f2a]', icon: '?' },
+      CLOWN:     { label: 'Blunder', id: 'clown', color: '#ca3431', bg: 'bg-[#ca3431]', icon: '??' },
     };
 
     const PIECE_VALUES = { p: 1, n: 3, b: 3, r: 5, q: 9, k: 0 };
@@ -153,67 +224,190 @@
       return baseMins > 0 ? `${baseMins} min` : `${baseSecs} sec`;
     };
 
-    const Avatar = ({ username, size = 10, bgClass }) => {
-      const [src, setSrc] = useState('https://www.chess.com/bundles/web/images/user-image.svg');
-      useEffect(() => {
-        if(!username) return;
-        fetch(`https://api.chess.com/pub/player/${username}`)
-          .then(r => r.json())
-          .then(d => { if(d.avatar) setSrc(d.avatar) })
-          .catch(()=>{});
-      }, [username]);
-      return <img src={src} className={`w-${size} h-${size} rounded ${bgClass} object-cover shrink-0 shadow-sm`} alt={username} />;
+    const formatPlayClock = (seconds) => {
+      const sec = Math.max(0, seconds);
+      const m = Math.floor(sec / 60);
+      const s = Math.floor(sec % 60);
+      if (sec < 20 && sec > 0) {
+        const tenths = Math.floor((sec % 1) * 10);
+        return `${m}:${s.toString().padStart(2, '0')}.${tenths}`;
+      }
+      return `${m}:${s.toString().padStart(2, '0')}`;
+    }
+
+    const getBotElo = (level) => Math.floor(600 + (level * 173.3)); // L1=773, L15=3200
+    const getBotSkillLevel = (level) => Math.floor((level - 1) * (20 / 14)); // Maps 1-15 to 0-20
+
+    // Component Extractions to prevent React unmounting issues
+    const ProgressBar = ({ label, value, max=100, isWhite=true, t }) => {
+       const pct = Math.min(100, Math.max(0, (value/max)*100));
+       const colorClass = isWhite ? 'bg-white text-black' : 'bg-[#222] text-[#e3e3e3] border border-[#444]';
+       const barColor = isWhite ? 'bg-gradient-to-r from-gray-300 to-white' : 'bg-gradient-to-r from-gray-600 to-gray-300';
+       
+       return (
+          <div className="flex flex-col flex-1 items-center text-center">
+             <span className={`text-3xl font-black ${t.text} mb-2`}>{value}{max===100?'%':''}</span>
+             <div className="h-2 w-full bg-black/40 dark:bg-white/5 rounded-full overflow-hidden shadow-inner mb-2.5">
+               <div className={`h-full rounded-full ${barColor} shadow-[0_0_10px_rgba(255,255,255,0.1)] transition-all duration-1000 ease-out`} style={{width: `${pct}%`}}></div>
+             </div>
+             <span className={`text-[10px] font-bold px-4 py-1 rounded shadow-sm ${colorClass} w-full truncate`}>{label}</span>
+          </div>
+       )
     };
 
-    const TrendingOpenings = ({ t, appTheme }) => (
-      <div className={`w-full p-5 rounded-2xl ${t.panelInner} border ${t.border} shadow-[0_8px_30px_rgba(0,0,0,0.12)] flex flex-col transition-all duration-300 hover:border-${appTheme==='neon'?'cyan-500/50':'[#81b64c]/50'}`}>
-        <div className="flex items-center justify-between mb-4 border-b border-black/10 dark:border-white/5 pb-2">
-          <h4 className={`text-xs font-black uppercase tracking-wider ${t.text} flex items-center gap-2`}><Swords size={14} className={t.accentText}/> Meta Openings</h4>
-        </div>
-        <div className="flex flex-col gap-4">
-          {[
-            { name: "Sicilian Defense", win: 48, draw: 22, loss: 30 },
-            { name: "Caro-Kann", win: 42, draw: 35, loss: 23 },
-            { name: "Ruy Lopez", win: 40, draw: 38, loss: 22 },
-          ].map((op, i) => (
-            <div key={i} className="flex flex-col gap-1.5">
-              <div className="flex justify-between items-center">
-                <span className={`text-[11px] font-bold ${t.text}`}>{op.name}</span>
-                <span className={`text-[9px] font-bold ${t.textMuted}`}>{op.win}% Win</span>
-              </div>
-              <div className="w-full h-1.5 rounded-full flex overflow-hidden">
-                <div style={{width: `${op.win}%`}} className="bg-[#81b64c]" title={`Win: ${op.win}%`}></div>
-                <div style={{width: `${op.draw}%`}} className="bg-gray-400" title={`Draw: ${op.draw}%`}></div>
-                <div style={{width: `${op.loss}%`}} className="bg-[#ca3431]" title={`Loss: ${op.loss}%`}></div>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-    );
+    const PlayerBanner = ({ name, rating, capturedPieces, advantage, isBottom, clock, isPlayMode = false, t, isFlipped }) => {
+      const [profile, setProfile] = useState({ avatar: 'https://www.chess.com/bundles/web/images/user-image.svg', title: null });
+      
+      useEffect(() => {
+        if(!name || name.includes('OS AI')) return;
+        fetch(`https://api.chess.com/pub/player/${name}`)
+          .then(r => r.json())
+          .then(d => { setProfile({ avatar: d.avatar || profile.avatar, title: d.title || null }) })
+          .catch(()=>{});
+      }, [name]);
 
-    const GlobalLeaderboard = ({ t, appTheme, fetchGames }) => (
-      <div className={`w-full p-5 rounded-2xl ${t.panelInner} border ${t.border} shadow-[0_8px_30px_rgba(0,0,0,0.12)] flex flex-col transition-all duration-300 hover:border-${appTheme==='neon'?'cyan-500/50':'[#81b64c]/50'}`}>
-        <div className="flex items-center justify-between mb-4 border-b border-black/10 dark:border-white/5 pb-2">
-          <h4 className={`text-xs font-black uppercase tracking-wider ${t.text} flex items-center gap-2`}><Target size={14} className={t.accentText}/> Top Grandmasters</h4>
-        </div>
-        <div className="flex flex-col gap-2">
-          {[
-            { rank: 1, name: "MagnusCarlsen", rating: 2830 },
-            { rank: 2, name: "Hikaru", rating: 2789 },
-            { rank: 3, name: "FabianoCaruana", rating: 2784 },
-          ].map((gm) => (
-            <div key={gm.rank} onClick={() => fetchGames(gm.name)} className="flex items-center justify-between p-2 rounded-lg bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 transition-colors cursor-pointer group">
-               <div className="flex items-center gap-3">
-                 <span className={`text-xs font-black w-4 text-center ${gm.rank === 1 ? 'text-[#f3ae16]' : t.textMuted}`}>{gm.rank}</span>
-                 <span className={`text-xs font-bold ${t.text} group-hover:${t.accentText} transition-colors`}>{gm.name}</span>
-               </div>
-               <span className={`text-[10px] font-mono font-bold ${t.textMuted}`}>{gm.rating}</span>
+      return (
+        <div className={`w-full flex justify-between items-center py-2 px-1 ${isPlayMode ? 'max-w-[600px] xl:max-w-[700px] mx-auto' : ''}`}>
+          <div className="flex items-center gap-3">
+            {name && name.includes('OS AI') ? (
+               <div className={`w-10 h-10 rounded ${t.panelInner} flex items-center justify-center border border-black/10 dark:border-white/10 shrink-0 shadow-sm`}><Cpu size={24} className="text-[#06b6d4]" /></div>
+            ) : (
+               <img src={profile.avatar} className={`w-10 h-10 rounded ${t.panelInner} border border-black/5 object-cover shrink-0 shadow-sm`} alt={name} />
+            )}
+            <div className="flex flex-col">
+              <span className={`font-bold text-sm ${t.text} flex items-center gap-2`}>
+                {profile.title && <span className="bg-[#ca3431] text-white px-1.5 py-0.5 rounded-sm text-[10px] font-black shadow-sm">{profile.title}</span>}
+                {name} <span className={`text-[11px] font-medium ${t.textMuted}`}>({rating})</span>
+              </span>
+              <div className="flex items-center gap-[2px] h-4 mt-0.5">
+                 {capturedPieces.map((p, i) => (
+                    <img key={i} src={`https://images.chesscomfiles.com/chess-themes/pieces/neo/150/${isBottom ? (isFlipped ? 'w' : 'b') : (isFlipped ? 'b' : 'w')}${p}.png`} className="w-3.5 h-3.5 opacity-90 drop-shadow-sm" alt={p}/>
+                 ))}
+                 {advantage > 0 && <span className={`text-[11px] font-bold ml-1 ${t.textMuted}`}>+{advantage}</span>}
+              </div>
             </div>
-          ))}
+          </div>
+          <div className={`flex items-center gap-2 text-lg font-mono font-black ${t.panelInner} ${t.text} border ${t.border} px-3 py-1 rounded-md shadow-sm min-w-[85px] justify-center`}>
+            {clock}
+          </div>
         </div>
-      </div>
-    );
+      );
+    };
+
+    const formatSan = (san) => {
+        if (!san) return null;
+        let symbol = '♙';
+        let displaySan = san;
+        
+        if (san.startsWith('N')) { symbol = '♘'; displaySan = san.substring(1); }
+        else if (san.startsWith('B')) { symbol = '♗'; displaySan = san.substring(1); }
+        else if (san.startsWith('R')) { symbol = '♖'; displaySan = san.substring(1); }
+        else if (san.startsWith('Q')) { symbol = '♕'; displaySan = san.substring(1); }
+        else if (san.startsWith('K')) { symbol = '♔'; displaySan = san.substring(1); }
+        else if (san === 'O-O' || san === 'O-O-O') { symbol = '♔'; displaySan = san; }
+
+        return (
+            <span className="flex items-center gap-[1px]">
+                <span className={`text-[13px] leading-none opacity-80 pb-[1px]`}>{symbol}</span>
+                <span>{displaySan}</span>
+            </span>
+        );
+    }
+
+    const LiveEvalGraph = ({ evalCurve, history, currentMoveIndex, goToMove, t }) => {
+      const [hoveredMoveIndex, setHoveredMoveIndex] = useState(null);
+
+      if(evalCurve.length === 0) return null;
+      const width = 1000, height = 300; 
+      
+      const points = evalCurve.map((ev, i) => {
+        const safeEv = typeof ev === 'number' && !isNaN(ev) ? ev : 0;
+        const x = (i / Math.max(1, evalCurve.length - 1)) * width;
+        const y = height/2 - (safeEv / 8) * (height/2);
+        return `${x},${y}`;
+      }).join(' ');
+
+      const whitePolygon = `0,${height/2} ${points} ${width},${height/2} 0,${height/2}`;
+      const blackPolygon = `0,${height/2} ${points} ${width},${height/2} 0,${height/2}`;
+
+      const cursorX = ((currentMoveIndex + 1) / Math.max(1, evalCurve.length - 1)) * 100;
+
+      const handleMouseMove = (e) => {
+        const rect = e.currentTarget.getBoundingClientRect();
+        const xPercent = (e.clientX - rect.left) / rect.width;
+        const targetMove = Math.round(xPercent * (evalCurve.length - 1)) - 1;
+        setHoveredMoveIndex(Math.max(-1, Math.min(targetMove, evalCurve.length - 2)));
+      };
+
+      const handleGraphClick = (e) => {
+        const rect = e.currentTarget.getBoundingClientRect();
+        const xPercent = (e.clientX - rect.left) / rect.width;
+        const targetMove = Math.round(xPercent * (evalCurve.length - 1)) - 1;
+        goToMove(targetMove);
+      };
+
+      const safeHoverVal = hoveredMoveIndex !== null && evalCurve[hoveredMoveIndex + 1] !== undefined ? evalCurve[hoveredMoveIndex + 1] : 0;
+
+      return (
+        <div 
+          className={`w-full h-28 md:h-32 ${t.panelInner} rounded-lg border ${t.border} relative mt-4 shadow-inner cursor-pointer overflow-hidden`}
+          onClick={handleGraphClick} onMouseMove={handleMouseMove} onMouseLeave={() => setHoveredMoveIndex(null)}
+        >
+          <svg viewBox={`0 0 ${width} ${height}`} preserveAspectRatio="none" className="w-full h-full absolute inset-0">
+            <clipPath id="top-half"><rect x="0" y="0" width={width} height={height/2} /></clipPath>
+            <clipPath id="bottom-half"><rect x="0" y={height/2} width={width} height={height/2} /></clipPath>
+            
+            <polygon points={whitePolygon} fill={t.evalTop} clipPath="url(#top-half)" />
+            <polygon points={blackPolygon} fill={t.evalBot} clipPath="url(#bottom-half)" />
+            
+            <line x1="0" y1={height/2} x2={width} y2={height/2} stroke="rgba(128,128,128,0.2)" strokeWidth="2" strokeDasharray="5,5" />
+          </svg>
+
+          {history.map((move, i) => {
+            if (!move || !move.quality || !['clown', 'bad', 'strange', 'sigma', 'awesome'].includes(move.quality.id)) return null;
+            const xPercent = ((i + 1) / Math.max(1, evalCurve.length - 1)) * 100;
+            const yPercent = 50 - ((evalCurve[i+1] || 0) / 8) * 50;
+            
+            return (
+              <div 
+                key={`badge_graph_${i}`} 
+                className="absolute w-4 h-4 rounded-full flex items-center justify-center text-white font-black text-[8px] border-[1.5px] border-white shadow-lg pointer-events-none z-10"
+                style={{ left: `${xPercent}%`, top: `${yPercent}%`, transform: 'translate(-50%, -50%)', backgroundColor: move.quality.color }}
+              >
+                <span className="tracking-tighter">{move.quality.icon}</span>
+              </div>
+            )
+          })}
+
+          <div 
+            className={`absolute top-0 bottom-0 w-[2px] ${t.accent} shadow-[0_0_8px_currentColor] pointer-events-none transition-all duration-100 ease-out z-20`}
+            style={{ left: `${cursorX}%`, transform: 'translateX(-50%)' }}
+          ></div>
+
+          {hoveredMoveIndex !== null && hoveredMoveIndex >= 0 && (
+            <>
+              <div 
+                className="absolute top-0 bottom-0 w-px bg-white/30 pointer-events-none z-20"
+                style={{ left: `${((hoveredMoveIndex + 1) / Math.max(1, evalCurve.length - 1)) * 100}%` }}
+              ></div>
+              <div 
+                className="absolute z-30 pointer-events-none bg-black/90 text-white text-[10px] px-2 py-1 rounded shadow-xl font-bold whitespace-nowrap transform -translate-x-1/2 -translate-y-full border border-white/20"
+                style={{
+                  left: `${((hoveredMoveIndex + 1) / Math.max(1, evalCurve.length - 1)) * 100}%`,
+                  top: `${Math.max(10, Math.min(90, 50 - (safeHoverVal / 8) * 50))}%`,
+                  marginTop: '-12px'
+                }}
+              >
+                {history[hoveredMoveIndex]?.san || 'Start'}<br/>
+                <span className={safeHoverVal >= 0 ? 'text-green-400' : 'text-red-400'}>
+                  {safeHoverVal > 0 ? '+' : ''}{Number(safeHoverVal).toFixed(1)}
+                </span>
+              </div>
+            </>
+          )}
+        </div>
+      );
+    };
 
     const FloatingPiecesBackground = ({ appTheme }) => {
       const elements = useMemo(() => Array.from({length: 25}).map((_, i) => ({
@@ -227,7 +421,7 @@
       })), []);
 
       const colorClass = appTheme === 'neon' ? 'text-cyan-500' : appTheme === 'light' ? 'text-[#81b64c]' : 'text-gray-400';
-      const themeOpacityModifier = appTheme === 'light' ? 0.15 : 0.05;
+      const themeOpacityModifier = appTheme === 'light' ? 0.05 : 0.05;
 
       return (
         <div className="fixed inset-0 overflow-hidden pointer-events-none z-0">
@@ -236,11 +430,8 @@
               key={el.id}
               className={`absolute bottom-[-150px] animate-float font-sans ${colorClass}`}
               style={{
-                left: el.left,
-                fontSize: el.fontSize,
-                opacity: themeOpacityModifier + el.baseOpacity,
-                animationDuration: el.animationDuration,
-                animationDelay: el.animationDelay
+                left: el.left, fontSize: el.fontSize, opacity: themeOpacityModifier + el.baseOpacity,
+                animationDuration: el.animationDuration, animationDelay: el.animationDelay
               }}
             >
               {el.piece}
@@ -250,53 +441,131 @@
       );
     };
 
+    const DeepGameLoader = ({ appTheme }) => {
+      const texts = [
+        "Intercepting PGN Stream...", 
+        "Validating Game Signatures...",
+        "Calibrating Neural Weights...", 
+        "Applying Stockfish Heuristics...",
+        "Building Analysis Tree...",
+        "Finalizing Assessment..."
+      ];
+      const [textIdx, setTextIdx] = useState(0);
+      
+      useEffect(() => {
+         const interval = setInterval(() => {
+            setTextIdx(prev => Math.min(prev + 1, texts.length - 1));
+         }, 350);
+         return () => clearInterval(interval);
+      }, [texts.length]);
+
+      const loaderStyle = {
+        '--ball1': appTheme === 'neon' ? '#06b6d4' : '#81b64c', 
+        '--ball2': appTheme === 'neon' ? '#8b5cf6' : '#ca3431', 
+        '--track-bg': appTheme === 'light' ? '#f8fafc' : '#111', 
+        '--track-color': appTheme === 'light' ? '#94a3b8' : '#333', 
+        '--glow-color': appTheme === 'neon' ? 'rgba(6,182,212,0.5)' : (appTheme === 'light' ? 'rgba(0,0,0,0.1)' : 'rgba(129,182,76,0.3)'),
+      };
+
+      const overlayClass = appTheme === 'light' 
+        ? "bg-white/80 backdrop-blur-md text-gray-900" 
+        : "bg-black/80 backdrop-blur-md text-white";
+
+      return (
+         <div className={`fixed inset-0 z-[9999] flex flex-col items-center justify-center animate-fade-in ${overlayClass}`}>
+            <div className="relative mb-16 flex justify-center items-center h-20">
+               <div className="game-loader" style={loaderStyle}></div>
+            </div>
+            <h2 className="text-2xl font-black tracking-widest uppercase animate-pulse drop-shadow-md">Deep OS Analysis</h2>
+            <p className={`text-xs mt-4 font-mono tracking-widest px-5 py-2 rounded-full border shadow-lg ${appTheme === 'light' ? 'bg-black/5 text-gray-700 border-black/10' : 'bg-white/10 text-gray-300 border-white/20'}`}>
+              {texts[textIdx]}
+            </p>
+            <div className="theme-loader-bar mt-6" style={{ '--accent-color': appTheme === 'neon' ? '#06b6d4' : '#81b64c' }}></div>
+         </div>
+      );
+    };
+
+
     const App = () => {
+      // SETTINGS & THEMES
       const [appTheme, setAppTheme] = useState('light');
       const [boardTheme, setBoardTheme] = useState('green');
-      const [showSettings, setShowSettings] = useState(false);
+      const [showSettingsModal, setShowSettingsModal] = useState(false);
+      const [settingsTab, setSettingsTab] = useState('interface');
+      
+      const [pieceSet, setPieceSet] = useState('neo');
+      const [showCoords, setShowCoords] = useState(true);
+      const [showLegalMoves, setShowLegalMoves] = useState(true);
+      const [targetDepth, setTargetDepth] = useState(14); 
+      const [showEvalBar, setShowEvalBar] = useState(true);
+      const [showHighlights, setShowHighlights] = useState(true);
+      const [blindfoldMode, setBlindfoldMode] = useState(false);
+      const [fastAnimations, setFastAnimations] = useState(false);
 
       const t = THEMES[appTheme];
       const bt = BOARD_THEMES[boardTheme];
       const bestArrowColor = appTheme === 'neon' ? '#06b6d4' : '#81b64c';
 
+      // NAVIGATION & GENERAL STATE
       const [activeTab, setActiveTab] = useState('report'); 
+      const [analyzeMode, setAnalyzeMode] = useState('username'); // 'username' | 'pgn'
       const [username, setUsername] = useState("");
+      const [pgnText, setPgnText] = useState("");
+      
       const [loading, setLoading] = useState(false);
+      const [isGameLoading, setIsGameLoading] = useState(false);
       const [error, setError] = useState("");
       const [games, setGames] = useState([]);
-      const [view, setView] = useState("home"); 
+      const [view, setView] = useState("home"); // home, workspace, play-setup, playing
       const [isFlipped, setIsFlipped] = useState(false);
       
+      // WORKSPACE STATE
       const [fullGame, setFullGame] = useState(new Chess());
       const [currentBoard, setCurrentBoard] = useState(new Chess());
       const [history, setHistory] = useState([]);
       const [currentMoveIndex, setCurrentMoveIndex] = useState(-1);
-      
       const [mainLine, setMainLine] = useState([]);
       const [mainEvalCurve, setMainEvalCurve] = useState([]);
       const [branchStartIndex, setBranchStartIndex] = useState(-1);
-
       const [gameMetrics, setGameMetrics] = useState(null);
       const [evalCurve, setEvalCurve] = useState([]); 
       const [movesExpanded, setMovesExpanded] = useState(false);
-      
       const [gameClocks, setGameClocks] = useState({ white: [], black: [], start: "10:00" });
 
-      // D&D and Interaction States
+      // PLAY AI STATE
+      const [playConfig, setPlayConfig] = useState({ level: 10, color: 'random', time: '10', mode: 'casual' });
+      const [playBoard, setPlayBoard] = useState(new Chess());
+      const [playClocks, setPlayClocks] = useState({ w: 600, b: 600, inc: 0 });
+      const [playLastTick, setPlayLastTick] = useState(Date.now());
+      const [playPlayerColor, setPlayPlayerColor] = useState('w');
+      const [playGameStatus, setPlayGameStatus] = useState(null); // 'win', 'loss', 'draw'
+      const [playHint, setPlayHint] = useState(null);
+      const [isHintLoading, setIsHintLoading] = useState(false);
+      
+      const playEngineRef = useRef(null);
+      const playTimerRef = useRef(null);
+      const hintRequestedRef = useRef(false);
+      const playPlayerColorRef = useRef(playPlayerColor);
+
+      // Keep ref updated for async callbacks
+      useEffect(() => {
+         playPlayerColorRef.current = playPlayerColor;
+      }, [playPlayerColor]);
+
+      // ENGINE & DRAG STATES
       const [selectedSquare, setSelectedSquare] = useState(null);
       const [dragState, setDragState] = useState(null); 
       const boardDOMRef = useRef(null);
-
       const [evaluation, setEvaluation] = useState(0.0);
       const [bestMove, setBestMove] = useState(null);
       const [analyzing, setAnalyzing] = useState(false);
       const [engineLines, setEngineLines] = useState([]);
       const [engineDepth, setEngineDepth] = useState(0);
-      
       const [engineStatus, setEngineStatus] = useState("initializing");
       const engine = useRef(null);
 
-      // Refs to access current state in engine callback
+      const deepAnalyzing = analyzing && engineDepth < targetDepth;
+
       const boardRef = useRef(currentBoard);
       const evalCurveRef = useRef(evalCurve);
       const historyRef = useRef(history);
@@ -309,20 +578,16 @@
       useEffect(() => {
         const handleKeyDown = (e) => {
           if (view !== 'workspace') return;
-          if (document.activeElement.tagName === 'INPUT' || document.activeElement.tagName === 'TEXTAREA') return;
+          if (document.activeElement?.tagName === 'INPUT' || document.activeElement?.tagName === 'TEXTAREA') return;
 
           if (e.key === 'ArrowLeft') {
-            e.preventDefault();
-            goToMove(currentMoveIndex - 1);
+            e.preventDefault(); goToMove(currentMoveIndex - 1);
           } else if (e.key === 'ArrowRight') {
-            e.preventDefault();
-            goToMove(currentMoveIndex + 1);
+            e.preventDefault(); goToMove(currentMoveIndex + 1);
           } else if (e.key === 'ArrowUp') {
-            e.preventDefault();
-            goToMove(-1);
+            e.preventDefault(); goToMove(-1);
           } else if (e.key === 'ArrowDown') {
-            e.preventDefault();
-            goToMove(history.length - 1);
+            e.preventDefault(); goToMove(history.length - 1);
           }
         };
 
@@ -330,7 +595,7 @@
         return () => window.removeEventListener('keydown', handleKeyDown);
       }, [currentMoveIndex, history.length, view]);
 
-      // --- Engine Setup (Optimized for High-Speed Updates) ---
+      // --- Workspace Engine Setup ---
       useEffect(() => {
         let latestLines = [];
         let latestEval = 0;
@@ -345,12 +610,8 @@
             const blob = new Blob([scriptText], { type: 'application/javascript' });
             engine.current = new Worker(URL.createObjectURL(blob));
             
-            // Allow manual clearance of background variables when forcing a new analysis
             engine.current.clearUIState = () => {
-              latestLines = [];
-              latestEval = 0;
-              latestBestMove = null;
-              latestDepth = 0;
+              latestLines = []; latestEval = 0; latestBestMove = null; latestDepth = 0;
             };
 
             engine.current.onmessage = (e) => {
@@ -358,23 +619,14 @@
               const parts = line.split(' pv ');
               let updated = false;
               
-              // Track dynamic search depth
               if (line.includes('info depth ')) {
                 const depthMatch = line.match(/info depth (\d+)/);
-                if (depthMatch) {
-                  latestDepth = parseInt(depthMatch[1]);
-                  updated = true;
-                }
+                if (depthMatch) { latestDepth = parseInt(depthMatch[1]); updated = true; }
               }
 
-              // Turn off analyzing indicator when the engine explicitly finishes
               if (line.startsWith('bestmove')) {
-                setAnalyzing(false);
-                // Force an immediate sync to the UI when analysis stops completely
-                setEngineDepth(latestDepth);
-                setEngineLines([...latestLines]);
-                setEvaluation(latestEval);
-                setBestMove(latestBestMove);
+                setAnalyzing(false); setEngineDepth(latestDepth);
+                setEngineLines([...latestLines]); setEvaluation(latestEval); setBestMove(latestBestMove);
                 return;
               }
 
@@ -399,29 +651,20 @@
                   const idx = mpvMatch ? parseInt(mpvMatch[1]) - 1 : 0;
                   
                   latestLines[idx] = { move: pv, eval: absEval };
-                  if (idx === 0) {
-                    latestEval = absEval;
-                    latestBestMove = pv;
-                  }
+                  if (idx === 0) { latestEval = absEval; latestBestMove = pv; }
                   updated = true;
                 }
               }
 
-              // MAXIMUM SPEED FIX: 
-              // React re-renders were choking the engine. We throttle the UI updates to 10 FPS (100ms)
-              // This gives the Engine 90% more CPU time to think deeper and faster, while keeping the UI responsive.
               const now = performance.now();
               if (updated && (now - lastUpdateTime > 100)) {
-                setEngineDepth(latestDepth);
-                setEngineLines([...latestLines]);
-                setEvaluation(latestEval);
-                setBestMove(latestBestMove);
+                setEngineDepth(latestDepth); setEngineLines([...latestLines]);
+                setEvaluation(latestEval); setBestMove(latestBestMove);
                 lastUpdateTime = now;
               }
             };
             
             engine.current.postMessage('uci');
-            // Safe, broad compatibility options for lightning fast browser evaluation
             engine.current.postMessage('setoption name Hash value 32');
             engine.current.postMessage('setoption name MultiPV value 3');
             setEngineStatus("ready");
@@ -434,6 +677,236 @@
         return () => engine.current?.terminate();
       }, []);
 
+      // --- PLAY AI ENGINE SETUP ---
+      useEffect(() => {
+        const initPlayEngine = async () => {
+          try {
+            const response = await fetch(STOCKFISH_URL);
+            const scriptText = await response.text();
+            const blob = new Blob([scriptText], { type: 'application/javascript' });
+            playEngineRef.current = new Worker(URL.createObjectURL(blob));
+            playEngineRef.current.postMessage('uci');
+            
+            playEngineRef.current.onmessage = (e) => {
+              const line = e.data;
+              if (line.startsWith('bestmove')) {
+                const moveStr = line.split(' ')[1];
+                if (moveStr && moveStr !== '(none)') {
+                   if (hintRequestedRef.current) {
+                      setPlayHint(moveStr);
+                      setIsHintLoading(false);
+                      hintRequestedRef.current = false;
+                   } else {
+                      setPlayBoard(prev => {
+                         const newB = new Chess();
+                         newB.loadPgn(prev.pgn());
+                         
+                         if (newB.turn() !== playPlayerColorRef.current) {
+                             const currentTurnColor = newB.turn();
+                             const moveObj = { from: moveStr.substring(0, 2), to: moveStr.substring(2, 4) };
+                             if (moveStr.length > 4) moveObj.promotion = moveStr.substring(4, 5);
+                             
+                             try {
+                                newB.move(moveObj);
+                                setPlayClocks(c => ({...c, [currentTurnColor]: c[currentTurnColor] + (c.inc || 0)}));
+
+                                if (newB.isCheckmate() || newB.isDraw() || newB.isStalemate() || newB.isThreefoldRepetition() || newB.isInsufficientMaterial()) {
+                                    setTimeout(() => setPlayGameStatus(newB.isCheckmate() ? (newB.turn() === playPlayerColorRef.current ? 'loss' : 'win') : 'draw'), 50);
+                                }
+                             } catch(err) { console.error("Bot invalid move", err); }
+                         }
+                         setTimeout(() => setPlayHint(null), 0);
+                         return newB;
+                      });
+                   }
+                }
+              }
+            };
+          } catch (err) {
+            console.warn("Play engine failed to initialize.");
+          }
+        };
+        initPlayEngine();
+        return () => playEngineRef.current?.terminate();
+      }, []); // Empty deps, using refs for state access
+
+      // --- Timer Logic for Playing ---
+      useEffect(() => {
+        if (view === 'playing' && !playGameStatus) {
+           playTimerRef.current = setInterval(() => {
+              const now = Date.now();
+              const delta = (now - playLastTick) / 1000;
+              setPlayLastTick(now);
+
+              setPlayClocks(prev => {
+                 const currentTurn = playBoard.turn();
+                 const newClocks = { ...prev };
+                 newClocks[currentTurn] = Math.max(0, newClocks[currentTurn] - delta);
+                 
+                 if (newClocks[currentTurn] === 0) {
+                    setPlayGameStatus(currentTurn === playPlayerColor ? 'loss' : 'win');
+                 }
+                 return newClocks;
+              });
+           }, 100);
+        } else {
+           clearInterval(playTimerRef.current);
+        }
+        return () => clearInterval(playTimerRef.current);
+      }, [view, playGameStatus, playLastTick, playBoard, playPlayerColor]);
+
+      // --- Play Logic Handlers ---
+      const handlePlayStart = () => {
+         const color = playConfig.color === 'random' ? (Math.random() > 0.5 ? 'w' : 'b') : playConfig.color;
+         setPlayPlayerColor(color);
+         
+         const tcParts = String(playConfig.time).split('+');
+         const baseSec = parseInt(tcParts[0], 10) * 60;
+         const incSec = tcParts.length > 1 ? parseInt(tcParts[1], 10) : 0;
+
+         setPlayBoard(new Chess());
+         setPlayClocks({ w: baseSec, b: baseSec, inc: incSec });
+         setPlayLastTick(Date.now());
+         setPlayGameStatus(null);
+         setPlayHint(null);
+         hintRequestedRef.current = false;
+         setView('playing');
+
+         if (color === 'b') {
+            triggerBotMove(new Chess(), 'b');
+         }
+      };
+
+      const triggerBotMove = (boardToEval, pColor) => {
+         if (!playEngineRef.current) return;
+         playEngineRef.current.postMessage('stop'); 
+         hintRequestedRef.current = false;
+         
+         setTimeout(() => {
+            playEngineRef.current.postMessage(`setoption name Skill Level value ${getBotSkillLevel(playConfig.level)}`);
+            playEngineRef.current.postMessage(`position fen ${boardToEval.fen()}`);
+            const thinkTime = 300 + (playConfig.level * 50) + Math.random() * 500;
+            playEngineRef.current.postMessage(`go movetime ${Math.floor(thinkTime)}`);
+         }, 10);
+      };
+
+      const requestHint = () => {
+         if (!playEngineRef.current || playGameStatus || playBoard.turn() !== playPlayerColor) return;
+         playEngineRef.current.postMessage('stop');
+         setIsHintLoading(true);
+         setTimeout(() => {
+            hintRequestedRef.current = true;
+            playEngineRef.current.postMessage(`position fen ${playBoard.fen()}`);
+            playEngineRef.current.postMessage(`go movetime 1000`);
+         }, 10);
+      };
+
+      const handleTakeback = () => {
+         if (playGameStatus) return; 
+         
+         const newB = new Chess();
+         newB.loadPgn(playBoard.pgn());
+         const historyLen = newB.history().length;
+         
+         if (newB.turn() === playPlayerColor && historyLen >= 2) {
+            newB.undo();
+            newB.undo();
+            setPlayBoard(newB);
+            setPlayHint(null);
+         } else if (newB.turn() !== playPlayerColor && historyLen >= 1) {
+            newB.undo();
+            setPlayBoard(newB);
+            setPlayHint(null);
+         }
+      };
+
+      const attemptPlayMove = (from, to) => {
+         if (playGameStatus || playBoard.turn() !== playPlayerColor) return false;
+
+         let moveObj = { from, to, promotion: 'q' };
+         try {
+            const newB = new Chess();
+            newB.loadPgn(playBoard.pgn()); 
+            const move = newB.move(moveObj);
+            
+            if (move) {
+               setPlayClocks(prev => ({...prev, [playPlayerColor]: prev[playPlayerColor] + (prev.inc || 0)}));
+
+               setPlayBoard(newB);
+               setSelectedSquare(null);
+               setPlayHint(null);
+               
+               if (newB.isCheckmate() || newB.isDraw() || newB.isStalemate() || newB.isThreefoldRepetition() || newB.isInsufficientMaterial()) {
+                   setTimeout(() => setPlayGameStatus(newB.isCheckmate() ? 'win' : 'draw'), 50);
+               } else {
+                   triggerBotMove(newB, playPlayerColor);
+               }
+               return true;
+            }
+         } catch(e) {}
+         setSelectedSquare(null);
+         return false;
+      };
+
+      const handleAnalyzePgn = (pgn) => {
+         if (!pgn || pgn.trim() === '') {
+             setError("Please enter a valid PGN.");
+             return;
+         }
+         setLoading(true);
+         setError("");
+         setTimeout(() => {
+             try {
+                 const testChess = new Chess();
+                 testChess.loadPgn(pgn);
+
+                 const wName = testChess.header().White || "White Player";
+                 const bName = testChess.header().Black || "Black Player";
+                 const wElo = testChess.header().WhiteElo || "1200";
+                 const bElo = testChess.header().BlackElo || "1200";
+                 const res = testChess.header().Result || "*";
+
+                 const gameObj = {
+                     pgn: pgn,
+                     white: { username: wName, rating: wElo, result: res === '1-0' ? 'win' : res === '0-1' ? 'lose' : 'draw' },
+                     black: { username: bName, rating: bElo, result: res === '0-1' ? 'win' : res === '1-0' ? 'lose' : 'draw' },
+                     time_control: "10+0",
+                     time_class: "rapid",
+                     end_time: Math.floor(Date.now() / 1000),
+                     rules: "chess"
+                 };
+                 handleGameClick(gameObj, 'report');
+             } catch(err) {
+                 setError("Failed to parse PGN. Ensure it is properly formatted.");
+             } finally {
+                 setLoading(false);
+             }
+         }, 500);
+      };
+
+      const handleBotGameReview = () => {
+         const botName = `NexusOS AI Lvl ${playConfig.level}`;
+         const botElo = getBotElo(playConfig.level);
+         const isUserWhite = playPlayerColor === 'w';
+         
+         const wName = isUserWhite ? 'Player' : botName;
+         const bName = !isUserWhite ? 'Player' : botName;
+         const res = playGameStatus === 'win' ? (isUserWhite ? '1-0' : '0-1') : playGameStatus === 'loss' ? (!isUserWhite ? '1-0' : '0-1') : '1/2-1/2';
+
+         const exportBoard = new Chess();
+         exportBoard.loadPgn(playBoard.pgn());
+         exportBoard.header('White', wName, 'Black', bName, 'Result', res, 'WhiteElo', String(isUserWhite ? 1200 : botElo), 'BlackElo', String(!isUserWhite ? 1200 : botElo));
+         
+         const finalPgn = exportBoard.pgn();
+         
+         setPlayGameStatus(null);
+         setView('home');
+         setAnalyzeMode('pgn');
+         setPgnText(finalPgn);
+         
+         handleAnalyzePgn(finalPgn);
+      };
+
       // --- Live Quality Assignment for Custom Branch Moves ---
       useEffect(() => {
         if (currentMoveIndex < 0) return;
@@ -441,6 +914,7 @@
         const move = hist[currentMoveIndex];
 
         if (!move || !move.isBranch) return;
+        if (analyzing && engineDepth < targetDepth) return;
 
         const isWhiteMove = move.color === 'w';
         const prevEval = evalCurveRef.current[currentMoveIndex] !== undefined ? evalCurveRef.current[currentMoveIndex] : 0.2;
@@ -448,11 +922,12 @@
 
         let quality = MOVE_TYPES.BEST;
         if (boardRef.current.isCheckmate()) quality = MOVE_TYPES.SIGMA;
-        else if (delta > 1.0) quality = MOVE_TYPES.AWESOME;
-        else if (delta >= -0.2) quality = MOVE_TYPES.BEST;
-        else if (delta >= -0.8) quality = MOVE_TYPES.OK;
-        else if (delta >= -1.5) quality = MOVE_TYPES.STRANGE;
-        else if (delta >= -3.0) quality = MOVE_TYPES.BAD;
+        else if (delta > 2.0) quality = MOVE_TYPES.AWESOME; 
+        else if (delta >= -0.3) quality = MOVE_TYPES.BEST;
+        else if (delta >= -0.8) quality = MOVE_TYPES.NICE;
+        else if (delta >= -1.5) quality = MOVE_TYPES.OK;
+        else if (delta >= -2.5) quality = MOVE_TYPES.STRANGE;
+        else if (delta >= -4.5) quality = MOVE_TYPES.BAD;
         else quality = MOVE_TYPES.CLOWN;
 
         if (move.quality?.id !== quality.id) {
@@ -471,7 +946,7 @@
           return newCurve;
         });
 
-      }, [evaluation, currentMoveIndex]);
+      }, [evaluation, currentMoveIndex, engineDepth, analyzing, targetDepth]);
 
       const runAnalysis = (fen) => {
         if (engineStatus !== "simulated" && engine.current) {
@@ -508,7 +983,6 @@
           }
 
           engine.current.postMessage(`position fen ${fen}`);
-          // CHANGED to "go infinite" so the engine analyzes continuously and much faster
           engine.current.postMessage('go infinite');
         }, 10);
       };
@@ -600,7 +1074,6 @@
           }
 
           let standardGames = [];
-          
           for (let i = archivesData.archives.length - 1; i >= Math.max(0, archivesData.archives.length - 3); i--) {
             const latestMonthUrl = archivesData.archives[i];
             const gamesRes = await fetch(latestMonthUrl);
@@ -644,21 +1117,25 @@
 
         return {
           white: {
-            accuracy: wAcc.toFixed(1),
-            rating: wElo || Math.floor(1200 + Math.random() * 400),
-            estimated: estW,
+            accuracy: wAcc.toFixed(1), rating: wElo || Math.floor(1200 + Math.random() * 400), estimated: estW,
             counts: { sigma: 0, awesome: 1, best: Math.floor(totalMoves*0.3), nice: Math.floor(totalMoves*0.2), ok: Math.floor(totalMoves*0.1), theoretical: Math.min(5, Math.floor(totalMoves*0.1)), strange: Math.floor(Math.random()*4), bad: Math.floor(Math.random()*3), clown: Math.floor(Math.random()*2) }
           },
           black: {
-            accuracy: bAcc.toFixed(1),
-            rating: bElo || Math.floor(1200 + Math.random() * 400),
-            estimated: estB,
+            accuracy: bAcc.toFixed(1), rating: bElo || Math.floor(1200 + Math.random() * 400), estimated: estB,
             counts: { sigma: 0, awesome: 1, best: Math.floor(totalMoves*0.28), nice: Math.floor(totalMoves*0.2), ok: Math.floor(totalMoves*0.15), theoretical: Math.min(5, Math.floor(totalMoves*0.1)), strange: Math.floor(Math.random()*5), bad: Math.floor(Math.random()*4), clown: Math.floor(Math.random()*2) }
           }
         };
       };
 
-      const loadGame = (gameObj) => {
+      const handleGameClick = (gameObj, overrideTab = 'report') => {
+        setIsGameLoading(true);
+        loadGame(gameObj, overrideTab);
+        setTimeout(() => {
+          setIsGameLoading(false);
+        }, 4500);
+      };
+
+      const loadGame = (gameObj, overrideTab) => {
         const newGame = new Chess();
         try { newGame.loadPgn(gameObj.pgn); } catch(e) {}
         const hist = newGame.history({ verbose: true });
@@ -675,7 +1152,6 @@
           return { ...m, quality };
         });
 
-        // Detailed Clock Parsing from PGN
         let startClock = "10:00"; 
         if (gameObj.time_control) {
             const base = parseInt(gameObj.time_control.split('+')[0]);
@@ -683,11 +1159,8 @@
                 const h = Math.floor(base/3600);
                 const m = Math.floor((base%3600)/60);
                 const s = base%60;
-                if (h > 0) {
-                   startClock = `${h}:${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
-                } else {
-                   startClock = `${m}:${s.toString().padStart(2,'0')}`;
-                }
+                if (h > 0) startClock = `${h}:${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
+                else startClock = `${m}:${s.toString().padStart(2,'0')}`;
             }
         }
         
@@ -697,8 +1170,7 @@
         const clkMatches = [...gameObj.pgn.matchAll(/\[%clk\s+([\d:]+(?:\.\d+)?)\]/g)].map(m => {
             let time = m[1];
             if (time.startsWith('0:')) time = time.substring(2);
-            time = time.split('.')[0]; 
-            return time;
+            return time.split('.')[0]; 
         });
         
         for (let i = 0; i < clkMatches.length; i++) {
@@ -726,16 +1198,17 @@
         metrics.userMistakes = (userCounts.bad || 0) + (userCounts.clown || 0);
 
         setGameMetrics(metrics);
-        setActiveTab('report');
+        setActiveTab(overrideTab);
         setView("workspace");
       };
 
       const validTargetSquares = useMemo(() => {
         if (!selectedSquare) return [];
         try {
-          return currentBoard.moves({ square: selectedSquare, verbose: true }).map(m => m.to);
+          const board = view === 'playing' ? playBoard : currentBoard;
+          return board.moves({ square: selectedSquare, verbose: true }).map(m => m.to);
         } catch(e) { return []; }
-      }, [selectedSquare, currentBoard]);
+      }, [selectedSquare, currentBoard, playBoard, view]);
 
       const attemptMove = (from, to) => {
         try {
@@ -771,24 +1244,26 @@
         return false;
       };
 
-      // Perfect Drag and Drop event handlers
       const handleGridPointerDown = (e, sq) => {
-        const piece = currentBoard.get(sq);
-        const turn = currentBoard.turn();
+        const board = view === 'playing' ? playBoard : currentBoard;
+        const turn = board.turn();
+        
+        setPlayHint(null); 
+
+        if (view === 'playing' && (playGameStatus || turn !== playPlayerColor)) return;
+
+        const piece = board.get(sq);
 
         if (piece && piece.color === turn) {
           e.preventDefault();
           setSelectedSquare(sq);
           setDragState({
-            startSq: sq,
-            startX: e.clientX,
-            startY: e.clientY,
-            curX: e.clientX,
-            curY: e.clientY
+            startSq: sq, startX: e.clientX, startY: e.clientY, curX: e.clientX, curY: e.clientY
           });
         } else {
           if (selectedSquare) {
-            attemptMove(selectedSquare, sq);
+            if (view === 'playing') attemptPlayMove(selectedSquare, sq);
+            else attemptMove(selectedSquare, sq);
           } else {
             setSelectedSquare(null);
           }
@@ -806,7 +1281,6 @@
         if (dragState) {
           if (boardDOMRef.current) {
             const rect = boardDOMRef.current.getBoundingClientRect();
-            // Robust clamping prevents aborting if mouse drags slightly off the board edge
             const x = e.clientX - rect.left;
             const y = e.clientY - rect.top;
             const clampedX = Math.max(0, Math.min(x, rect.width - 1));
@@ -814,12 +1288,15 @@
             
             const visualC = Math.floor((clampedX / rect.width) * 8);
             const visualR = Math.floor((clampedY / rect.height) * 8);
-            const c = isFlipped ? 7 - visualC : visualC;
-            const r = isFlipped ? 7 - visualR : visualR;
+            
+            const isBoardFlipped = view === 'playing' ? (playPlayerColor === 'b') : isFlipped;
+            const c = isBoardFlipped ? 7 - visualC : visualC;
+            const r = isBoardFlipped ? 7 - visualR : visualR;
             const targetSq = String.fromCharCode(97 + c) + (8 - r);
             
             if (dragState.startSq !== targetSq) {
-              attemptMove(dragState.startSq, targetSq);
+              if (view === 'playing') attemptPlayMove(dragState.startSq, targetSq);
+              else attemptMove(dragState.startSq, targetSq);
             }
           }
           setDragState(null);
@@ -829,44 +1306,27 @@
       const playEngineMove = (lan) => {
         try {
           const testBoard = new Chess(currentBoard.fen());
-          
-          // CRITICAL FIX: Safe LAN parsing to prevent 'Invalid Move f3f4' errors
-          const moveObj = {
-            from: lan.substring(0, 2),
-            to: lan.substring(2, 4),
-          };
-          // Only add promotion if the engine string explicitly demands it
-          if (lan.length > 4) {
-             moveObj.promotion = lan.substring(4, 5);
-          }
+          const moveObj = { from: lan.substring(0, 2), to: lan.substring(2, 4) };
+          if (lan.length > 4) moveObj.promotion = lan.substring(4, 5);
           
           const move = testBoard.move(moveObj);
-          
           if (move) {
             const nextMainMove = mainLine[currentMoveIndex + 1];
             if (branchStartIndex === -1 && nextMainMove && nextMainMove.san === move.san) {
-              goToMove(currentMoveIndex + 1);
-              return;
+              goToMove(currentMoveIndex + 1); return;
             }
-
-            if (branchStartIndex === -1) {
-              setBranchStartIndex(currentMoveIndex);
-            }
+            if (branchStartIndex === -1) setBranchStartIndex(currentMoveIndex);
 
             const newHist = history.slice(0, currentMoveIndex + 1);
-            // Engine moves are typically "Best" or "Theoretical" if you follow them
             newHist.push({ ...move, quality: MOVE_TYPES.BEST, isBranch: true });
             
             const newCurve = evalCurve.slice(0, currentMoveIndex + 2);
-            newCurve.push(evaluation); 
-            setEvalCurve(newCurve);
+            newCurve.push(evaluation); setEvalCurve(newCurve);
             
             setHistory(newHist);
             setCurrentMoveIndex(currentMoveIndex + 1);
           }
-        } catch (e) {
-          console.error("Invalid engine move:", e);
-        }
+        } catch (e) { console.error("Invalid engine move:", e); }
       };
 
       const calculateMaterial = (fen) => {
@@ -899,15 +1359,18 @@
       };
 
       const mat = calculateMaterial(currentBoard.fen());
+      const playMat = calculateMaterial(playBoard.fen());
 
       const getSquareCoordinates = useCallback((square) => {
         if (!square || square.length < 2) return {x:0, y:0};
         const file = square.charCodeAt(0) - 97; 
         const rank = 8 - parseInt(square[1]);  
-        const visualC = isFlipped ? 7 - file : file;
-        const visualR = isFlipped ? 7 - rank : rank;
+        
+        const isBoardFlipped = view === 'playing' ? (playPlayerColor === 'b') : isFlipped;
+        const visualC = isBoardFlipped ? 7 - file : file;
+        const visualR = isBoardFlipped ? 7 - rank : rank;
         return { x: visualC * 12.5 + 6.25, y: visualR * 12.5 + 6.25 };
-      }, [isFlipped]);
+      }, [isFlipped, view, playPlayerColor]);
 
       const returnToMainLine = () => {
         setHistory(mainLine);
@@ -916,202 +1379,167 @@
         setBranchStartIndex(-1);
       };
 
-      const LiveEvalGraph = () => {
-        const [hoveredMoveIndex, setHoveredMoveIndex] = useState(null);
-
-        if(evalCurve.length === 0) return null;
-        const width = 1000, height = 300; 
-        
-        const points = evalCurve.map((ev, i) => {
-          const safeEv = typeof ev === 'number' && !isNaN(ev) ? ev : 0;
-          const x = (i / Math.max(1, evalCurve.length - 1)) * width;
-          const y = height/2 - (safeEv / 8) * (height/2);
-          return `${x},${y}`;
-        }).join(' ');
-
-        const whitePolygon = `0,${height/2} ${points} ${width},${height/2} 0,${height/2}`;
-        const blackPolygon = `0,${height/2} ${points} ${width},${height/2} 0,${height/2}`;
-
-        const cursorX = ((currentMoveIndex + 1) / Math.max(1, evalCurve.length - 1)) * 100;
-
-        const handleMouseMove = (e) => {
-          const rect = e.currentTarget.getBoundingClientRect();
-          const xPercent = (e.clientX - rect.left) / rect.width;
-          const targetMove = Math.round(xPercent * (evalCurve.length - 1)) - 1;
-          setHoveredMoveIndex(Math.max(-1, Math.min(targetMove, evalCurve.length - 2)));
-        };
-
-        const handleGraphClick = (e) => {
-          const rect = e.currentTarget.getBoundingClientRect();
-          const xPercent = (e.clientX - rect.left) / rect.width;
-          const targetMove = Math.round(xPercent * (evalCurve.length - 1)) - 1;
-          goToMove(targetMove);
-        };
-
-        const safeHoverVal = hoveredMoveIndex !== null && evalCurve[hoveredMoveIndex + 1] !== undefined ? evalCurve[hoveredMoveIndex + 1] : 0;
-
-        return (
-          <div 
-            className={`w-full h-28 md:h-32 ${t.panelInner} rounded-lg border ${t.border} relative mt-4 shadow-inner cursor-pointer overflow-hidden`}
-            onClick={handleGraphClick}
-            onMouseMove={handleMouseMove}
-            onMouseLeave={() => setHoveredMoveIndex(null)}
-          >
-            <svg viewBox={`0 0 ${width} ${height}`} preserveAspectRatio="none" className="w-full h-full absolute inset-0">
-              <clipPath id="top-half"><rect x="0" y="0" width={width} height={height/2} /></clipPath>
-              <clipPath id="bottom-half"><rect x="0" y={height/2} width={width} height={height/2} /></clipPath>
-              
-              <polygon points={whitePolygon} fill={t.evalTop} clipPath="url(#top-half)" />
-              <polygon points={blackPolygon} fill={t.evalBot} clipPath="url(#bottom-half)" />
-              
-              <line x1="0" y1={height/2} x2={width} y2={height/2} stroke="rgba(128,128,128,0.2)" strokeWidth="2" strokeDasharray="5,5" />
-            </svg>
-
-            {history.map((move, i) => {
-              if (!move || !move.quality || !['clown', 'bad', 'strange', 'sigma', 'awesome'].includes(move.quality.id)) return null;
-              const xPercent = ((i + 1) / Math.max(1, evalCurve.length - 1)) * 100;
-              const yPercent = 50 - ((evalCurve[i+1] || 0) / 8) * 50;
-              
-              return (
-                <div 
-                  key={`badge_${i}`} 
-                  className="absolute w-4 h-4 rounded-full flex items-center justify-center text-white font-black text-[8px] border-[1.5px] border-white shadow-lg pointer-events-none z-10"
-                  style={{ left: `${xPercent}%`, top: `${yPercent}%`, transform: 'translate(-50%, -50%)', backgroundColor: move.quality.color }}
-                >
-                  {move.quality.icon}
-                </div>
-              )
-            })}
-
-            <div 
-              className={`absolute top-0 bottom-0 w-[2px] ${t.accent} shadow-[0_0_8px_currentColor] pointer-events-none transition-all duration-100 ease-out z-20`}
-              style={{ left: `${cursorX}%`, transform: 'translateX(-50%)' }}
-            ></div>
-
-            {hoveredMoveIndex !== null && hoveredMoveIndex >= 0 && (
-              <>
-                <div 
-                  className="absolute top-0 bottom-0 w-px bg-white/30 pointer-events-none z-20"
-                  style={{ left: `${((hoveredMoveIndex + 1) / Math.max(1, evalCurve.length - 1)) * 100}%` }}
-                ></div>
-                <div 
-                  className="absolute z-30 pointer-events-none bg-black/90 text-white text-[10px] px-2 py-1 rounded shadow-xl font-bold whitespace-nowrap transform -translate-x-1/2 -translate-y-full border border-white/20"
-                  style={{
-                    left: `${((hoveredMoveIndex + 1) / Math.max(1, evalCurve.length - 1)) * 100}%`,
-                    top: `${Math.max(10, Math.min(90, 50 - (safeHoverVal / 8) * 50))}%`,
-                    marginTop: '-12px'
-                  }}
-                >
-                  {history[hoveredMoveIndex]?.san || 'Start'}<br/>
-                  <span className={safeHoverVal >= 0 ? 'text-green-400' : 'text-red-400'}>
-                    {safeHoverVal > 0 ? '+' : ''}{Number(safeHoverVal).toFixed(1)}
-                  </span>
-                </div>
-              </>
-            )}
-          </div>
-        );
-      };
-
-      const PlayerBanner = ({ name, rating, capturedPieces, advantage, isBottom, clock }) => (
-        <div className={`w-full flex justify-between items-center py-2 px-1`}>
-          <div className="flex items-center gap-3">
-            <Avatar username={name} size={10} bgClass={t.panelInner} />
-            <div className="flex flex-col">
-              <span className={`font-bold text-sm ${t.text} flex items-center gap-2`}>
-                {name} <span className={`text-[11px] font-medium ${t.textMuted}`}>({rating})</span>
-              </span>
-              <div className="flex items-center gap-[2px] h-4 mt-0.5">
-                 {capturedPieces.map((p, i) => (
-                    <img key={i} src={`https://images.chesscomfiles.com/chess-themes/pieces/neo/150/${isBottom ? (isFlipped ? 'w' : 'b') : (isFlipped ? 'b' : 'w')}${p}.png`} className="w-3.5 h-3.5 opacity-90 drop-shadow-sm" alt={p}/>
-                 ))}
-                 {advantage > 0 && <span className={`text-[11px] font-bold ml-1 ${t.textMuted}`}>+{advantage}</span>}
-              </div>
-            </div>
-          </div>
-          <div className={`flex items-center gap-2 text-lg font-mono font-black ${t.panelInner} ${t.text} border ${t.border} px-3 py-1 rounded-md shadow-sm`}>
-            {clock}
-          </div>
-        </div>
-      );
-
-      const ProgressBar = ({ label, value, max=100, isWhite=true }) => {
-         const pct = Math.min(100, Math.max(0, (value/max)*100));
-         const colorClass = isWhite ? 'bg-white text-black' : 'bg-[#222] text-[#e3e3e3] border border-[#444]';
-         const barColor = isWhite ? 'bg-gradient-to-r from-gray-300 to-white' : 'bg-gradient-to-r from-gray-600 to-gray-300';
-         
-         return (
-            <div className="flex flex-col flex-1 items-center text-center">
-               <span className={`text-3xl font-black ${t.text} mb-2`}>{value}{max===100?'%':''}</span>
-               <div className="h-2 w-full bg-black/40 dark:bg-white/5 rounded-full overflow-hidden shadow-inner mb-2.5">
-                 <div className={`h-full rounded-full ${barColor} shadow-[0_0_10px_rgba(255,255,255,0.1)] transition-all duration-1000 ease-out`} style={{width: `${pct}%`}}></div>
-               </div>
-               <span className={`text-[10px] font-bold px-4 py-1 rounded shadow-sm ${colorClass} w-full truncate`}>{label}</span>
-            </div>
-         )
-      };
-
-      // Determine correct clock rendering based on the move history index
       const whiteMovesMade = Math.floor((currentMoveIndex + 2) / 2);
       const blackMovesMade = Math.floor((currentMoveIndex + 1) / 2);
-      
       const whiteTime = gameClocks.white[Math.min(whiteMovesMade, gameClocks.white.length - 1)] || gameClocks.start;
       const blackTime = gameClocks.black[Math.min(blackMovesMade, gameClocks.black.length - 1)] || gameClocks.start;
 
+      // Derived Play history for the live right panel
+      const playHistoryRaw = playBoard.history({ verbose: true });
+      const playMovePairs = [];
+      for (let i = 0; i < playHistoryRaw.length; i += 2) {
+          playMovePairs.push({ w: playHistoryRaw[i], b: playHistoryRaw[i + 1] || null });
+      }
+
       return (
-        <div className={`min-h-screen ${t.bg} font-sans flex flex-col relative overflow-x-hidden`}>
+        <div className={`min-h-screen ${t.bg} font-sans flex flex-col relative overflow-x-hidden transition-colors duration-500`}>
+          
+          {isGameLoading && <DeepGameLoader appTheme={appTheme} />}
+          
+          {showSettingsModal && (
+            <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/60 backdrop-blur-sm animate-fade-in">
+               <div className={`w-[90%] max-w-xl ${t.panel} border ${t.border} rounded-2xl shadow-2xl flex flex-col overflow-hidden animate-slide-up`}>
+                  <div className={`flex justify-between items-center p-4 border-b ${t.border}`}>
+                     <h3 className={`font-black text-lg ${t.text} flex items-center gap-2`}><Settings size={20} className={t.accentText} /> System Preferences</h3>
+                     <button onClick={() => setShowSettingsModal(false)} className={`p-1.5 rounded-lg hover:bg-black/10 dark:hover:bg-white/10 ${t.textMuted} transition-colors`}><X size={20}/></button>
+                  </div>
+                  
+                  <div className="flex">
+                     <div className={`w-1/3 flex flex-col border-r ${t.border} ${t.panelInner}`}>
+                        <button onClick={()=>setSettingsTab('interface')} className={`p-4 text-left text-sm font-bold flex items-center gap-2 transition-colors ${settingsTab==='interface'?`${t.accent} text-white`:`${t.text} hover:bg-black/5 dark:hover:bg-white/5`}`}><Palette size={16}/> Interface</button>
+                        <button onClick={()=>setSettingsTab('board')} className={`p-4 text-left text-sm font-bold flex items-center gap-2 transition-colors ${settingsTab==='board'?`${t.accent} text-white`:`${t.text} hover:bg-black/5 dark:hover:bg-white/5`}`}><Layout size={16}/> Board & Pieces</button>
+                     </div>
+                     
+                     <div className="w-2/3 p-6 max-h-[60vh] overflow-y-auto custom-scrollbar">
+                        {settingsTab === 'interface' && (
+                           <div className="space-y-6">
+                              <div>
+                                 <h4 className={`text-xs font-bold uppercase tracking-widest mb-3 ${t.textMuted}`}>App Theme</h4>
+                                 <div className="grid grid-cols-1 gap-2">
+                                    <button onClick={()=>setAppTheme('light')} className={`py-3 px-4 rounded-xl border flex items-center gap-3 transition-all ${appTheme==='light'?`${t.accent} text-white border-transparent shadow-md`:`${t.border} ${t.text} hover:bg-black/5`} text-sm font-bold`}><Sun size={18}/> Light (Default)</button>
+                                    <button onClick={()=>setAppTheme('dark')} className={`py-3 px-4 rounded-xl border flex items-center gap-3 transition-all ${appTheme==='dark'?`${t.accent} text-white border-transparent shadow-md`:`${t.border} ${t.text} hover:bg-white/5`} text-sm font-bold`}><Moon size={18}/> Dark</button>
+                                    <button onClick={()=>setAppTheme('neon')} className={`py-3 px-4 rounded-xl border flex items-center gap-3 transition-all ${appTheme==='neon'?`${t.accent} text-black border-transparent shadow-md`:`${t.border} ${t.text} hover:bg-white/5`} text-sm font-bold`}><Zap size={18}/> Neon Cyberspace</button>
+                                 </div>
+                              </div>
+                              <div>
+                                 <div className="flex justify-between items-center mb-2">
+                                    <h4 className={`text-xs font-bold uppercase tracking-widest ${t.textMuted}`}>Eval Target Depth</h4>
+                                    <span className={`text-xs font-black ${t.accentText}`}>Depth {targetDepth}</span>
+                                 </div>
+                                 <input type="range" min="10" max="24" value={targetDepth} onChange={(e) => setTargetDepth(parseInt(e.target.value))} style={{'--accent-color': appTheme === 'neon' ? '#06b6d4' : '#81b64c'}} />
+                                 <p className={`text-[10px] mt-2 ${t.textMuted} font-medium`}>Higher depth means better accuracy but takes longer to load evaluations during manual analysis.</p>
+                              </div>
+                              <div className="space-y-2">
+                                 <label className={`flex justify-between items-center cursor-pointer p-3 rounded-xl border ${t.border} ${t.panelInner} hover:bg-black/5 dark:hover:bg-white/5 transition-colors`}>
+                                    <span className={`text-xs font-bold uppercase tracking-widest ${t.text}`}>Show Evaluation Bar</span>
+                                    <div className="relative">
+                                       <input type="checkbox" className="sr-only toggle-checkbox" checked={showEvalBar} onChange={() => setShowEvalBar(!showEvalBar)} />
+                                       <div className={`block w-10 h-6 rounded-full transition-colors ${showEvalBar ? t.accent : 'bg-gray-400 dark:bg-gray-600'}`}></div>
+                                       <div className={`absolute left-1 top-1 bg-white w-4 h-4 rounded-full transition-transform ${showEvalBar ? 'transform translate-x-4' : ''}`}></div>
+                                    </div>
+                                 </label>
+                                 <label className={`flex justify-between items-center cursor-pointer p-3 rounded-xl border ${t.border} ${t.panelInner} hover:bg-black/5 dark:hover:bg-white/5 transition-colors`}>
+                                    <span className={`text-xs font-bold uppercase tracking-widest ${t.text}`}>Fast Animations</span>
+                                    <div className="relative">
+                                       <input type="checkbox" className="sr-only toggle-checkbox" checked={fastAnimations} onChange={() => setFastAnimations(!fastAnimations)} />
+                                       <div className={`block w-10 h-6 rounded-full transition-colors ${fastAnimations ? t.accent : 'bg-gray-400 dark:bg-gray-600'}`}></div>
+                                       <div className={`absolute left-1 top-1 bg-white w-4 h-4 rounded-full transition-transform ${fastAnimations ? 'transform translate-x-4' : ''}`}></div>
+                                    </div>
+                                 </label>
+                              </div>
+                           </div>
+                        )}
 
-          {/* Background Effect for Home */}
-          {view === 'home' && <FloatingPiecesBackground appTheme={appTheme} />}
-
-          {/* Navbar */}
-          <nav className={`w-full ${t.panel} ${t.border} border-b py-3 px-6 flex justify-between items-center shrink-0 shadow-sm z-50 relative`}>
-            <div className="flex items-center gap-2 cursor-pointer group" onClick={() => setView('home')}>
-              <div className={`w-8 h-8 rounded ${t.accent} flex items-center justify-center transition-transform group-hover:scale-110 group-hover:rotate-12 ${appTheme==='neon'?'text-black':'text-white'}`}><Brain size={18} /></div>
-              <span className={`font-black text-lg ${t.text}`}>Grandmaster OS</span>
+                        {settingsTab === 'board' && (
+                           <div className="space-y-6">
+                              <div>
+                                 <h4 className={`text-xs font-bold uppercase tracking-widest mb-3 ${t.textMuted}`}>Board Color</h4>
+                                 <div className="grid grid-cols-2 gap-2">
+                                    {Object.keys(BOARD_THEMES).map(btName => (
+                                       <button key={btName} onClick={()=>setBoardTheme(btName)} className={`flex items-center gap-2 p-2.5 rounded-xl border transition-all ${boardTheme===btName?`${t.accent} text-white border-transparent shadow-md`:`${t.border} ${t.text} hover:bg-black/5 dark:hover:bg-white/5`} text-xs font-bold capitalize`}>
+                                          <div className="w-5 h-5 rounded flex overflow-hidden shadow-sm"><div className={`w-1/2 h-full ${BOARD_THEMES[btName].light}`}></div><div className={`w-1/2 h-full ${BOARD_THEMES[btName].dark}`}></div></div>
+                                          {btName}
+                                       </button>
+                                    ))}
+                                 </div>
+                              </div>
+                              <div>
+                                 <h4 className={`text-xs font-bold uppercase tracking-widest mb-3 ${t.textMuted}`}>Piece Set</h4>
+                                 <div className="grid grid-cols-3 gap-2">
+                                    {PIECE_SETS.map(ps => (
+                                       <button key={ps} onClick={()=>setPieceSet(ps)} className={`flex flex-col items-center gap-1.5 p-2.5 rounded-xl border transition-all ${pieceSet===ps?`${t.accent} text-white border-transparent shadow-md`:`${t.border} ${t.text} hover:bg-black/5 dark:hover:bg-white/5`} text-[10px] font-bold capitalize`}>
+                                          <img src={`https://images.chesscomfiles.com/chess-themes/pieces/${ps}/150/wn.png`} className="w-7 h-7 drop-shadow-md" alt={ps} />
+                                          {ps.replace('_', ' ')}
+                                       </button>
+                                    ))}
+                                 </div>
+                              </div>
+                              <div className="space-y-2">
+                                 <label className={`flex justify-between items-center cursor-pointer p-3 rounded-xl border ${t.border} ${t.panelInner} hover:bg-black/5 dark:hover:bg-white/5 transition-colors`}>
+                                    <span className={`text-xs font-bold uppercase tracking-widest ${t.text}`}>Board Coordinates</span>
+                                    <div className="relative">
+                                       <input type="checkbox" className="sr-only toggle-checkbox" checked={showCoords} onChange={() => setShowCoords(!showCoords)} />
+                                       <div className={`block w-10 h-6 rounded-full transition-colors ${showCoords ? t.accent : 'bg-gray-400 dark:bg-gray-600'}`}></div>
+                                       <div className={`absolute left-1 top-1 bg-white w-4 h-4 rounded-full transition-transform ${showCoords ? 'transform translate-x-4' : ''}`}></div>
+                                    </div>
+                                 </label>
+                                 <label className={`flex justify-between items-center cursor-pointer p-3 rounded-xl border ${t.border} ${t.panelInner} hover:bg-black/5 dark:hover:bg-white/5 transition-colors`}>
+                                    <span className={`text-xs font-bold uppercase tracking-widest ${t.text}`}>Legal Move Dots</span>
+                                    <div className="relative">
+                                       <input type="checkbox" className="sr-only toggle-checkbox" checked={showLegalMoves} onChange={() => setShowLegalMoves(!showLegalMoves)} />
+                                       <div className={`block w-10 h-6 rounded-full transition-colors ${showLegalMoves ? t.accent : 'bg-gray-400 dark:bg-gray-600'}`}></div>
+                                       <div className={`absolute left-1 top-1 bg-white w-4 h-4 rounded-full transition-transform ${showLegalMoves ? 'transform translate-x-4' : ''}`}></div>
+                                    </div>
+                                 </label>
+                                 <label className={`flex justify-between items-center cursor-pointer p-3 rounded-xl border ${t.border} ${t.panelInner} hover:bg-black/5 dark:hover:bg-white/5 transition-colors`}>
+                                    <span className={`text-xs font-bold uppercase tracking-widest ${t.text}`}>Piece Highlights</span>
+                                    <div className="relative">
+                                       <input type="checkbox" className="sr-only toggle-checkbox" checked={showHighlights} onChange={() => setShowHighlights(!showHighlights)} />
+                                       <div className={`block w-10 h-6 rounded-full transition-colors ${showHighlights ? t.accent : 'bg-gray-400 dark:bg-gray-600'}`}></div>
+                                       <div className={`absolute left-1 top-1 bg-white w-4 h-4 rounded-full transition-transform ${showHighlights ? 'transform translate-x-4' : ''}`}></div>
+                                    </div>
+                                 </label>
+                                 <label className={`flex justify-between items-center cursor-pointer p-3 rounded-xl border ${t.border} ${t.panelInner} hover:bg-black/5 dark:hover:bg-white/5 transition-colors`}>
+                                    <span className={`text-xs font-bold uppercase tracking-widest ${t.text}`}>Blindfold Mode</span>
+                                    <div className="relative">
+                                       <input type="checkbox" className="sr-only toggle-checkbox" checked={blindfoldMode} onChange={() => setBlindfoldMode(!blindfoldMode)} />
+                                       <div className={`block w-10 h-6 rounded-full transition-colors ${blindfoldMode ? t.accent : 'bg-gray-400 dark:bg-gray-600'}`}></div>
+                                       <div className={`absolute left-1 top-1 bg-white w-4 h-4 rounded-full transition-transform ${blindfoldMode ? 'transform translate-x-4' : ''}`}></div>
+                                    </div>
+                                 </label>
+                              </div>
+                           </div>
+                        )}
+                     </div>
+                  </div>
+               </div>
             </div>
-            <div className="relative">
-              <button onClick={() => setShowSettings(!showSettings)} className={`p-2 rounded-full hover:bg-black/10 dark:hover:bg-white/10 ${t.textMuted} transition-all`}>
+          )}
+
+          {(view === 'home' || view === 'play-setup') && <FloatingPiecesBackground appTheme={appTheme} />}
+
+          <nav className={`w-full ${t.panel} ${t.border} border-b py-3 px-6 flex justify-between items-center shrink-0 shadow-sm z-40 relative`}>
+            <div className="flex items-center gap-3 cursor-pointer group" onClick={() => setView('home')}>
+              <div className={`w-9 h-9 rounded-xl ${t.accent} flex items-center justify-center transition-transform duration-300 group-hover:scale-110 group-hover:rotate-12 shadow-md ${appTheme==='neon'?'text-black':'text-white'}`}><Brain size={20} /></div>
+              <span className={`font-black text-xl ${t.text} tracking-tight`}>Grandmaster OS</span>
+            </div>
+            <div className="flex gap-2 items-center">
+              <button onClick={() => setView('play-setup')} className={`px-4 py-2 rounded-xl flex items-center gap-2 ${t.panelInner} border ${t.border} ${t.text} hover:${t.accentText} hover:border-current transition-all text-sm font-bold shadow-sm`}>
+                <Gamepad2 size={18} /> Play AI
+              </button>
+              <button onClick={() => setShowSettingsModal(true)} className={`p-2.5 rounded-xl ${t.panelInner} border ${t.border} hover:bg-black/10 dark:hover:bg-white/10 ${t.textMuted} hover:${t.text} transition-all shadow-sm`}>
                 <Settings size={20} />
               </button>
-              {showSettings && (
-                <div className={`absolute top-12 right-0 w-64 ${t.panel} ${t.border} border rounded-xl shadow-2xl p-4 z-50`}>
-                  <h4 className={`text-xs font-bold uppercase tracking-wider mb-3 ${t.textMuted}`}>Theme</h4>
-                  <div className="flex gap-2 mb-4">
-                    <button onClick={()=>setAppTheme('dark')} className={`flex-1 p-2 rounded border ${appTheme==='dark'?`${t.accent} text-white border-transparent`:`${t.border} ${t.text}`} text-xs font-bold`}><Moon size={14} className="mx-auto mb-1"/>Dark</button>
-                    <button onClick={()=>setAppTheme('light')} className={`flex-1 p-2 rounded border ${appTheme==='light'?`${t.accent} text-white border-transparent`:`${t.border} ${t.text}`} text-xs font-bold`}><Sun size={14} className="mx-auto mb-1"/>Light</button>
-                    <button onClick={()=>setAppTheme('neon')} className={`flex-1 p-2 rounded border ${appTheme==='neon'?`${t.accent} text-black border-transparent`:`${t.border} ${t.text}`} text-xs font-bold`}><Zap size={14} className="mx-auto mb-1"/>Neon</button>
-                  </div>
-                  <h4 className={`text-xs font-bold uppercase tracking-wider mb-3 ${t.textMuted}`}>Board Style</h4>
-                  <div className="grid grid-cols-2 gap-2">
-                    {Object.keys(BOARD_THEMES).map(btName => (
-                      <button 
-                        key={btName}
-                        onClick={()=>setBoardTheme(btName)}
-                        className={`flex items-center gap-2 p-2 rounded border ${boardTheme===btName?`${t.accent} text-white border-transparent`:`${t.border} ${t.text}`} text-xs font-bold capitalize`}
-                      >
-                        <div className="w-4 h-4 rounded-sm flex">
-                          <div className={`w-2 h-full ${BOARD_THEMES[btName].light}`}></div>
-                          <div className={`w-2 h-full ${BOARD_THEMES[btName].dark}`}></div>
-                        </div>
-                        {btName}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              )}
             </div>
           </nav>
           
-          {/* Main View Area */}
-          <div className={`flex-1 w-full max-w-[1500px] mx-auto p-4 md:p-6 flex flex-col z-10`}>
+          <div className={`flex-1 w-full max-w-[1500px] mx-auto p-4 md:p-6 flex flex-col z-10 ${view === 'workspace' ? 'pb-32 lg:pb-6' : ''}`}>
             
             {view === "home" ? (
-              <div className="w-full flex-1 flex flex-col pb-10">
+              <div className="w-full flex-1 flex flex-col pb-10 animate-in fade-in">
                  {games.length === 0 ? (
-                   <div className="flex flex-col items-center justify-center min-h-[85vh] text-center relative z-10 w-full mx-auto mt-4">
+                   <div className="flex flex-col items-center justify-center min-h-[85vh] text-center relative z-10 w-full mx-auto mt-4 px-4">
                      
-                     {/* Floating Logo */}
                      <div className="relative inline-block mb-8 group">
                        <div className={`relative w-28 h-28 md:w-32 md:h-32 rounded-[2.5rem] ${t.panelInner} flex items-center justify-center border ${t.border} shadow-[0_8px_30px_rgba(0,0,0,0.12)] backdrop-blur-2xl transition-transform duration-500 hover:scale-110 hover:rotate-6 cursor-pointer`}>
                          <Shield size={56} className={t.accentText} />
@@ -1121,119 +1549,146 @@
                      <h1 className={`text-5xl md:text-7xl lg:text-8xl font-black mb-6 tracking-tighter ${appTheme === 'light' ? 'text-gray-900 drop-shadow-md' : 'text-transparent bg-clip-text bg-gradient-to-br from-white via-gray-300 to-gray-600 drop-shadow-2xl'}`}>
                        Unleash Your <span className={`${t.accentText} ${appTheme === 'light' ? 'drop-shadow-none' : ''}`}>Genius</span>
                      </h1>
-                     <p className={`text-base md:text-xl ${t.textMuted} max-w-2xl mb-12 leading-relaxed drop-shadow-sm font-medium px-4`}>
-                       The ultimate in-browser chess operating system. Enter any username to instantly sync archives and analyze with blazing-fast embedded Stockfish.
+                     <p className={`text-base md:text-xl ${t.textMuted} max-w-2xl mb-12 leading-relaxed drop-shadow-sm font-medium`}>
+                       The ultimate in-browser chess operating system. Analyze any player's archives instantly, or challenge our embedded Neural Engine.
                      </p>
                      
-                     <div className="relative w-full max-w-xl flex flex-col md:flex-row gap-4 group mb-10 px-4">
-                        <div className="relative transform transition-all duration-300 group-hover:scale-[1.02] flex-1">
-                          <div className="relative">
-                            <Search className={`absolute left-5 top-1/2 -translate-y-1/2 ${t.textMuted}`} size={22} />
-                            <input 
-                              className={`w-full relative ${t.panelInner} border-2 border-transparent focus:border-[var(--tw-ring-color)] ring-${appTheme==='neon'?'cyan-500':'[#81b64c]'} rounded-2xl py-5 pl-14 pr-6 ${t.text} text-lg font-bold placeholder:${t.textMuted} focus:outline-none shadow-xl transition-all duration-300`}
-                              placeholder="Search Chess.com Username..."
-                              value={username}
-                              onChange={(e) => { setUsername(e.target.value); setError(""); }}
-                              onKeyDown={(e) => e.key === 'Enter' && fetchGames()}
-                            />
-                          </div>
+                     <div className="w-full max-w-4xl grid grid-cols-1 md:grid-cols-2 gap-6 mb-12 mx-auto">
+                        
+                        {/* Analysis Card */}
+                        <div className={`relative flex flex-col p-6 rounded-3xl ${t.panelInner} border ${t.border} shadow-xl hover:-translate-y-1 transition-all duration-300 text-left overflow-hidden group`}>
+                           <div className="absolute right-[-20px] top-[-20px] opacity-5 group-hover:scale-110 group-hover:-rotate-12 transition-transform duration-500 pointer-events-none">
+                              <CloudLightning size={150} />
+                           </div>
+                           <div className="flex items-center gap-3 mb-4 relative z-10">
+                              <div className={`w-10 h-10 rounded-xl ${t.accent} bg-opacity-20 flex items-center justify-center`}><Search size={20} className={t.accentText}/></div>
+                              <h3 className={`text-xl font-black ${t.text}`}>Analyze Game</h3>
+                           </div>
+                           <p className={`text-sm ${t.textMuted} mb-4 relative z-10`}>Pull matches via <span className={`font-black ${t.accentText}`}>CHESS.COM</span> username or paste standard PGN text for deep analysis.</p>
+                           
+                           <div className={`flex w-full rounded-xl bg-black/5 dark:bg-white/5 p-1 mb-4 border ${t.border} relative z-10`}>
+                             <button onClick={() => setAnalyzeMode('username')} className={`flex-1 py-2 text-xs font-bold rounded-lg transition-all ${analyzeMode === 'username' ? `${t.panel} shadow-sm ${t.text}` : `${t.textMuted} hover:${t.text}`}`}>Chess.com Username</button>
+                             <button onClick={() => setAnalyzeMode('pgn')} className={`flex-1 py-2 text-xs font-bold rounded-lg transition-all ${analyzeMode === 'pgn' ? `${t.panel} shadow-sm ${t.text}` : `${t.textMuted} hover:${t.text}`}`}>Paste PGN</button>
+                           </div>
+
+                           {analyzeMode === 'username' ? (
+                             <div className="flex gap-2 relative z-10 mt-auto">
+                               <div className="relative flex-1">
+                                 <input 
+                                   className={`w-full ${t.panel} border border-black/10 dark:border-white/10 rounded-xl py-3.5 pl-4 pr-4 ${t.text} text-sm font-bold placeholder:${t.textMuted} focus:outline-none focus:ring-2 ring-[${t.accentText.split('-')[1]}] shadow-inner transition-all`}
+                                   placeholder="Username..."
+                                   value={username} onChange={(e) => { setUsername(e.target.value); setError(""); }}
+                                   onKeyDown={(e) => e.key === 'Enter' && fetchGames()}
+                                 />
+                               </div>
+                               <button onClick={() => fetchGames(username)} className={`px-6 rounded-xl ${t.accent} ${appTheme==='neon'?'text-black':'text-white'} font-black tracking-widest uppercase text-sm hover:brightness-110 active:scale-95 transition-all shadow-md flex items-center justify-center`}>
+                                 {loading ? <Loader2 size={18} className="animate-spin" /> : "Go"}
+                               </button>
+                             </div>
+                           ) : (
+                             <div className="flex flex-col gap-2 relative z-10 mt-auto">
+                                <textarea 
+                                   className={`w-full ${t.panel} border border-black/10 dark:border-white/10 rounded-xl p-3 ${t.text} text-xs font-mono placeholder:${t.textMuted} focus:outline-none focus:ring-2 ring-[${t.accentText.split('-')[1]}] shadow-inner transition-all h-16 resize-none custom-scrollbar`}
+                                   placeholder="Paste PGN text here..."
+                                   value={pgnText} onChange={(e) => { setPgnText(e.target.value); setError(""); }}
+                                />
+                                <button onClick={() => handleAnalyzePgn(pgnText)} className={`w-full py-3 rounded-xl ${t.accent} ${appTheme==='neon'?'text-black':'text-white'} font-black tracking-widest uppercase text-sm hover:brightness-110 active:scale-95 transition-all shadow-md flex items-center justify-center`}>
+                                   {loading ? <Loader2 size={18} className="animate-spin" /> : "Analyze"}
+                                </button>
+                             </div>
+                           )}
                         </div>
-                        <button onClick={() => fetchGames(username)} className={`md:w-auto w-full ${t.accent} ${appTheme==='neon'?'text-black':'text-white'} px-8 py-5 rounded-2xl text-lg font-black uppercase tracking-widest hover:brightness-110 flex items-center justify-center gap-3 shadow-[0_0_30px_rgba(0,0,0,0.3)] transition-all duration-300 active:scale-95 group-hover:scale-[1.02]`}>
-                          {loading ? <Loader2 size={24} className="animate-spin" /> : "Analyze"}
-                        </button>
+
+                        {/* Play vs AI Card */}
+                        <div onClick={() => setView('play-setup')} className={`relative flex flex-col p-6 rounded-3xl bg-gradient-to-br ${appTheme === 'neon' ? 'from-cyan-900 to-blue-900 border border-cyan-500/50' : appTheme === 'light' ? 'from-[#81b64c] to-emerald-600 border border-transparent text-white' : 'from-[#2c3e50] to-[#000000] border border-white/10 text-white'} shadow-xl hover:-translate-y-1 hover:shadow-2xl transition-all duration-300 text-left cursor-pointer group overflow-hidden`}>
+                           <div className="absolute right-[-20px] top-[-20px] opacity-10 group-hover:scale-110 group-hover:rotate-12 transition-transform duration-500 pointer-events-none">
+                              <Cpu size={150} />
+                           </div>
+                           <div className="flex items-center gap-3 mb-4 relative z-10">
+                              <div className="w-10 h-10 rounded-xl bg-white/20 backdrop-blur-md flex items-center justify-center shadow-inner"><Gamepad2 size={20} className="text-white"/></div>
+                              <h3 className="text-xl font-black text-white drop-shadow-md">Play vs NexusOS</h3>
+                           </div>
+                           <p className="text-sm text-white/80 mb-6 relative z-10 drop-shadow-sm">Challenge our local web-assembly Neural Engine. Features adjustable ELO, takebacks, and hints.</p>
+                           
+                           <div className="mt-auto relative z-10">
+                              <button className="w-full py-3.5 rounded-xl bg-white text-black font-black tracking-widest uppercase text-sm hover:bg-gray-100 transition-colors shadow-lg flex items-center justify-center gap-2">
+                                 Start Match <ChevronRight size={18} strokeWidth={3}/>
+                              </button>
+                           </div>
+                        </div>
                      </div>
 
-                     {/* Quick Search Tags */}
-                     <div className="flex flex-wrap items-center justify-center gap-3 mb-16 px-4">
+                     <div className="flex flex-wrap items-center justify-center gap-3 mb-10 px-4">
                        <span className={`text-xs font-bold uppercase tracking-wider ${t.textMuted} mr-2 flex items-center gap-1.5`}><Activity size={14} className={t.accentText} /> Live Targets:</span>
-                       {['Hikaru', 'MagnusCarlsen', 'GothamChess', 'GarryKasparov', 'BotezLive'].map(user => (
+                       {['Hikaru', 'MagnusCarlsen', 'GothamChess', 'GarryKasparov'].map(user => (
                          <button 
-                           key={user}
-                           onClick={() => fetchGames(user)}
-                           className={`text-xs font-bold px-4 py-2.5 rounded-full ${t.panelInner} border ${t.border} ${t.text} hover:${t.accentText} hover:border-current hover:shadow-[0_0_15px_currentColor] transition-all hover:-translate-y-1 shadow-md cursor-pointer flex items-center gap-2`}
+                           key={user} onClick={() => { setAnalyzeMode('username'); fetchGames(user); }}
+                           className={`text-xs font-bold px-4 py-2 rounded-full ${t.panelInner} border ${t.border} ${t.text} hover:${t.accentText} hover:border-current hover:shadow-[0_0_15px_currentColor] transition-all hover:-translate-y-1 shadow-sm cursor-pointer flex items-center gap-2`}
                          >
-                           <div className="w-1.5 h-1.5 rounded-full bg-current animate-pulse"></div>
-                           {user}
+                           <div className="w-1.5 h-1.5 rounded-full bg-current animate-pulse"></div>{user}
                          </button>
                        ))}
                      </div>
 
                      {error && (
-                        <div className="mb-8 text-center animate-fade-in w-full px-4">
-                          <p className="text-[#ca3431] text-sm font-bold tracking-wide bg-[#ca3431]/10 inline-block px-6 py-3 rounded-xl border border-[#ca3431]/30 shadow-lg backdrop-blur-md">
-                            {error}
+                        <div className="mb-8 text-center animate-pop w-full px-4">
+                          <p className="text-[#ca3431] text-sm font-bold tracking-wide bg-[#ca3431]/10 inline-block px-6 py-3 rounded-xl border border-[#ca3431]/30 shadow-lg backdrop-blur-md flex items-center justify-center gap-2 mx-auto">
+                            <AlertTriangle size={16} /> {error}
                           </p>
                         </div>
                       )}
 
-                     {/* Complex Data Grid */}
-                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 w-full max-w-6xl mx-auto px-4 z-10 relative">
-                        {/* Left Col: OS System Metrics Cards */}
-                        <div className="lg:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6 h-full">
-                          <div className={`p-6 rounded-2xl ${t.panelInner} border ${t.border} hover:-translate-y-1 hover:shadow-[0_15px_40px_rgba(129,182,76,0.15)] transition-all duration-300 group text-left flex flex-col justify-between h-[220px]`}>
-                            <div className="flex items-start justify-between mb-4">
-                              <div className="w-12 h-12 rounded-xl bg-[#81b64c]/10 flex items-center justify-center group-hover:scale-110 transition-transform">
-                                <Cpu className="text-[#81b64c]" size={24} />
-                              </div>
-                              <span className="text-[#81b64c] text-[10px] font-black uppercase tracking-wider bg-[#81b64c]/10 px-2.5 py-1 rounded-md">Local Compute</span>
-                            </div>
-                            <div>
-                              <h3 className={`text-2xl font-black ${t.text} mb-1`}>WASM Stockfish</h3>
-                              <p className={`text-xs font-bold ${t.textMuted} uppercase tracking-wider`}>Embedded Engine Node</p>
-                            </div>
-                          </div>
-                          
-                          <div className={`p-6 rounded-2xl ${t.panelInner} border ${t.border} hover:-translate-y-1 hover:shadow-[0_15px_40px_rgba(6,182,212,0.15)] transition-all duration-300 group text-left flex flex-col justify-between h-[220px]`}>
-                            <div className="flex items-start justify-between mb-4">
-                              <div className="w-12 h-12 rounded-xl bg-cyan-500/10 flex items-center justify-center group-hover:scale-110 transition-transform">
-                                <Zap className="text-cyan-500" size={24} />
-                              </div>
-                              <span className="text-cyan-500 text-[10px] font-black uppercase tracking-wider bg-cyan-500/10 px-2.5 py-1 rounded-md">Real-Time</span>
-                            </div>
-                            <div>
-                              <h3 className={`text-2xl font-black ${t.text} mb-1`}>0ms Latency</h3>
-                              <p className={`text-xs font-bold ${t.textMuted} uppercase tracking-wider`}>Local Eval Execution</p>
-                            </div>
-                          </div>
+                     {/* Feature Praise Cards */}
+                     <div className="w-full max-w-6xl grid grid-cols-1 sm:grid-cols-2 gap-8 mt-10 mb-16 px-4 mx-auto">
+                       <div className={`p-8 rounded-3xl ${t.panelInner} border ${t.border} shadow-xl hover:-translate-y-2 transition-transform duration-300 relative overflow-hidden group`}>
+                         <div className="absolute right-[-15px] top-[-15px] opacity-[0.03] group-hover:opacity-[0.07] transition-opacity duration-300 pointer-events-none text-current">
+                           <Zap size={140} />
+                         </div>
+                         <div className={`w-12 h-12 rounded-xl ${t.accent} bg-opacity-20 flex items-center justify-center mb-5 relative z-10`}>
+                           <Zap size={24} className={t.accentText} />
+                         </div>
+                         <h4 className={`text-xl font-black ${t.text} mb-3 relative z-10`}>Blazing Fast WASM</h4>
+                         <p className={`text-sm ${t.textMuted} leading-relaxed relative z-10`}>Embedded local Stockfish engine runs directly in your browser using WebAssembly. Enjoy absolute zero latency on deep evaluations without relying on external server queues or delayed API responses.</p>
+                       </div>
+                       
+                       <div className={`p-8 rounded-3xl ${t.panelInner} border ${t.border} shadow-xl hover:-translate-y-2 transition-transform duration-300 relative overflow-hidden group`}>
+                         <div className="absolute right-[-15px] top-[-15px] opacity-[0.03] group-hover:opacity-[0.07] transition-opacity duration-300 pointer-events-none text-current">
+                           <Brain size={140} />
+                         </div>
+                         <div className="w-12 h-12 rounded-xl bg-cyan-500/20 flex items-center justify-center mb-5 relative z-10">
+                           <Brain size={24} className="text-cyan-500" />
+                         </div>
+                         <h4 className={`text-xl font-black ${t.text} mb-3 relative z-10`}>Neural Heuristics</h4>
+                         <p className={`text-sm ${t.textMuted} leading-relaxed relative z-10`}>Experience move-by-move brilliant/blunder detection with gorgeous live evaluation graphs. Navigate deep complex engine lines easily with visually stunning annotations on the board.</p>
+                       </div>
 
-                          <div className={`p-6 rounded-2xl ${t.panelInner} border ${t.border} hover:-translate-y-1 hover:shadow-[0_15px_40px_rgba(239,68,68,0.15)] transition-all duration-300 group text-left flex flex-col justify-between h-[220px]`}>
-                            <div className="flex items-start justify-between mb-4">
-                              <div className="w-12 h-12 rounded-xl bg-red-500/10 flex items-center justify-center group-hover:scale-110 transition-transform">
-                                <Crosshair className="text-red-500" size={24} />
-                              </div>
-                              <span className="text-red-500 text-[10px] font-black uppercase tracking-wider bg-red-500/10 px-2.5 py-1 rounded-md">Interactive</span>
-                            </div>
-                            <div>
-                              <h3 className={`text-2xl font-black ${t.text} mb-1`}>Smart Branches</h3>
-                              <p className={`text-xs font-bold ${t.textMuted} uppercase tracking-wider`}>Dynamic Auto-Variations</p>
-                            </div>
-                          </div>
+                       <div className={`p-8 rounded-3xl ${t.panelInner} border ${t.border} shadow-xl hover:-translate-y-2 transition-transform duration-300 relative overflow-hidden group`}>
+                         <div className="absolute right-[-15px] top-[-15px] opacity-[0.03] group-hover:opacity-[0.07] transition-opacity duration-300 pointer-events-none text-current">
+                           <CloudLightning size={140} />
+                         </div>
+                         <div className="w-12 h-12 rounded-xl bg-purple-500/20 flex items-center justify-center mb-5 relative z-10">
+                           <CloudLightning size={24} className="text-purple-500" />
+                         </div>
+                         <h4 className={`text-xl font-black ${t.text} mb-3 relative z-10`}>Seamless Cloud Sync</h4>
+                         <p className={`text-sm ${t.textMuted} leading-relaxed relative z-10`}>Instantly bridge the OS with standard Chess APIs to natively pull your latest competitive matches. Keep your analysis centralized inside a fully unified workspace.</p>
+                       </div>
 
-                          <div className={`p-6 rounded-2xl ${t.panelInner} border ${t.border} hover:-translate-y-1 hover:shadow-[0_15px_40px_rgba(168,85,247,0.15)] transition-all duration-300 group text-left flex flex-col justify-between h-[220px]`}>
-                            <div className="flex items-start justify-between mb-4">
-                              <div className="w-12 h-12 rounded-xl bg-purple-500/10 flex items-center justify-center group-hover:scale-110 transition-transform">
-                                <CloudLightning className="text-purple-500" size={24} />
-                              </div>
-                              <span className="text-purple-500 text-[10px] font-black uppercase tracking-wider bg-purple-500/10 px-2.5 py-1 rounded-md">Cloud Sync</span>
-                            </div>
-                            <div>
-                              <h3 className={`text-2xl font-black ${t.text} mb-1`}>API Bridge</h3>
-                              <p className={`text-xs font-bold ${t.textMuted} uppercase tracking-wider`}>Global Match Archives</p>
-                            </div>
-                          </div>
-                        </div>
-                        
-                        {/* Right Col: Telemetry Widgets */}
-                        <div className="flex flex-col gap-6">
-                           <GlobalLeaderboard t={t} appTheme={appTheme} fetchGames={fetchGames} />
-                           <TrendingOpenings t={t} appTheme={appTheme} />
-                        </div>
+                       <div className={`p-8 rounded-3xl ${t.panelInner} border ${t.border} shadow-xl hover:-translate-y-2 transition-transform duration-300 relative overflow-hidden group`}>
+                         <div className="absolute right-[-15px] top-[-15px] opacity-[0.03] group-hover:opacity-[0.07] transition-opacity duration-300 pointer-events-none text-current">
+                           <Palette size={140} />
+                         </div>
+                         <div className="w-12 h-12 rounded-xl bg-rose-500/20 flex items-center justify-center mb-5 relative z-10">
+                           <Palette size={24} className="text-rose-500" />
+                         </div>
+                         <h4 className={`text-xl font-black ${t.text} mb-3 relative z-10`}>Dynamic UI Engine</h4>
+                         <p className={`text-sm ${t.textMuted} leading-relaxed relative z-10`}>Immersive, fully responsive design structured around advanced Web Components. Easily customize board themes, piece sets, global aesthetic toggles, and audio behaviors.</p>
+                       </div>
                      </div>
 
                    </div>
                  ) : (
-                   <div className="animate-in slide-in-from-bottom-4 relative z-10 w-full max-w-4xl mx-auto">
-                     <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4 mb-6 p-4 rounded-2xl bg-black/10 dark:bg-white/5 border border-white/5 backdrop-blur-md">
+                   <div className="animate-in slide-in-from-bottom-4 relative z-10 w-full max-w-5xl mx-auto">
+                     <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4 mb-6 p-4 rounded-2xl bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/5 backdrop-blur-md">
                         <h1 className={`text-xl font-bold ${t.text} flex items-center gap-2`}>
                           <Swords size={20} className={t.accentText} /> 
                           Match Archives: <span className={`${t.accent} ${appTheme==='neon'?'text-black':'text-white'} px-3 py-1 shadow-md rounded-lg ml-1`}>{username}</span>
@@ -1245,8 +1700,7 @@
                               <input 
                                 className={`w-40 md:w-56 ${t.panelInner} border ${t.border} rounded-lg py-2 pl-9 pr-4 ${t.text} text-sm font-medium placeholder:${t.textMuted} focus:outline-none focus:border-[${t.accentText.split('-')[1]}] transition-colors`}
                                 placeholder="Search..."
-                                value={username}
-                                onChange={(e) => { setUsername(e.target.value); setError(""); }}
+                                value={username} onChange={(e) => { setUsername(e.target.value); setError(""); }}
                                 onKeyDown={(e) => e.key === 'Enter' && fetchGames()}
                               />
                             </div>
@@ -1257,15 +1711,12 @@
                           {error && (
                             <div className="absolute top-full right-0 mt-3 whitespace-nowrap bg-[#ca3431]/10 border border-[#ca3431]/30 px-3 py-2 rounded-lg flex items-center gap-2 animate-pop shadow-lg backdrop-blur-md z-50">
                               <AlertTriangle className="text-[#ca3431]" size={14} strokeWidth={2.5} />
-                              <span className="text-[#ca3431] text-[10px] font-bold tracking-wider">
-                                {error}
-                              </span>
+                              <span className="text-[#ca3431] text-[10px] font-bold tracking-wider">{error}</span>
                             </div>
                           )}
                         </div>
                      </div>
 
-                     {/* Grid View for Games (2 per row) */}
                      <div className="grid grid-cols-1 md:grid-cols-2 gap-5 pb-10">
                         {games.map((g, idx) => {
                           const date = new Date(g.end_time * 1000);
@@ -1273,41 +1724,39 @@
                           const userResult = isUserWhite ? g.white.result : g.black.result;
                           
                           let resultText = 'Draw';
-                          let ResultIcon = null;
+                          let ResultIcon = Minus;
                           let resultStyle = appTheme === 'light' 
-                            ? `bg-gray-200/60 text-gray-700 border border-gray-300` 
+                            ? `bg-gray-200 text-gray-700 border border-gray-300` 
                             : `bg-white/5 text-gray-400 border-transparent`;
+                          let stickerIcon = Minus;
+                          let stickerColor = 'text-gray-400';
                           
                           if (userResult === 'win') {
-                            resultText = 'Win';
-                            ResultIcon = CheckCircle;
-                            resultStyle = appTheme === 'light'
-                              ? `bg-[#81b64c]/10 text-[#5e8b33] border border-[#81b64c]/30`
-                              : `bg-[#81b64c]/20 text-[#81b64c] border-transparent`;
+                            resultText = 'Win'; ResultIcon = CheckCircle;
+                            resultStyle = appTheme === 'light' ? `bg-[#81b64c]/15 text-[#4e7b23] border border-[#81b64c]/30` : `bg-[#81b64c]/20 text-[#81b64c] border-transparent`;
+                            stickerIcon = Trophy; stickerColor = 'text-[#81b64c]';
                           } else if (['checkmated', 'timeout', 'resigned', 'abandoned', 'lose'].includes(userResult)) {
-                            resultText = 'Loss';
-                            ResultIcon = XCircle;
-                            resultStyle = appTheme === 'light'
-                              ? `bg-[#ca3431]/10 text-[#a82927] border border-[#ca3431]/30`
-                              : `bg-[#ca3431]/20 text-[#ca3431] border-transparent`;
+                            resultText = 'Loss'; ResultIcon = XCircle;
+                            resultStyle = appTheme === 'light' ? `bg-[#ca3431]/15 text-[#a82927] border border-[#ca3431]/30` : `bg-[#ca3431]/20 text-[#ca3431] border-transparent`;
+                            stickerIcon = Skull; stickerColor = 'text-[#ca3431]';
                           }
 
-                          // Calculate total moves from PGN
+                          const StickerComponent = stickerIcon;
                           const movesMatch = g.pgn.match(/\d+\./g);
                           const moveCount = movesMatch ? movesMatch.length : '?';
 
                           return (
                             <div 
-                              key={idx} 
-                              onClick={() => loadGame(g)}
+                              key={idx} onClick={() => handleGameClick(g)}
                               className={`relative p-5 rounded-2xl border ${t.border} ${t.panel} hover:scale-[1.02] hover:-translate-y-1 transition-all duration-300 cursor-pointer shadow-lg overflow-hidden group`}
                             >
-                              {/* Header: Result Badge & Time/Date */}
-                              <div className="flex justify-between items-start mb-5">
+                              <div className={`absolute right-[-15px] top-[-10px] opacity-[0.10] group-hover:opacity-[0.20] group-hover:scale-110 group-hover:-rotate-12 transition-all duration-500 pointer-events-none ${stickerColor}`}>
+                                 <StickerComponent size={110} />
+                              </div>
+                              <div className="flex justify-between items-start mb-5 relative z-10">
                                 <div className="flex flex-col items-center gap-1.5">
                                   <div className={`flex items-center gap-1.5 text-xs font-bold px-3 py-1.5 rounded-md ${resultStyle}`}>
-                                    {ResultIcon && <ResultIcon size={14} strokeWidth={2.5} />}
-                                    {resultText}
+                                    <ResultIcon size={14} strokeWidth={2.5} /> {resultText}
                                   </div>
                                   <span className={`text-[11px] ${t.textMuted} font-medium`}>Rated</span>
                                 </div>
@@ -1320,8 +1769,7 @@
                                 </div>
                               </div>
 
-                              {/* Players Block */}
-                              <div className="flex flex-col gap-3.5 mb-2">
+                              <div className="flex flex-col gap-3.5 mb-2 relative z-10">
                                 <div className={`flex items-center justify-between p-2 rounded-lg bg-black/5 dark:bg-white/5 border ${t.border}`}>
                                    <div className={`flex items-center gap-2.5 ${t.text} font-bold text-sm`}>
                                      <span className="w-3.5 h-3.5 rounded-[4px] bg-white border border-gray-300 shadow-sm flex-shrink-0"></span> 
@@ -1338,16 +1786,12 @@
                                 </div>
                               </div>
 
-                              {/* Footer Stats */}
-                              <div className={`mt-5 pt-3 border-t ${t.border} flex justify-between items-center text-[11px] ${t.textMuted} font-medium`}>
+                              <div className={`mt-5 pt-3 border-t ${t.border} flex justify-between items-center text-[11px] ${t.textMuted} font-medium relative z-10`}>
                                  <span className="flex items-center gap-1.5">
                                    <Activity size={12} /> Total Moves: <strong className={`${t.text} text-xs`}>{moveCount}</strong>
                                  </span>
                                  <span className={`capitalize px-2 py-0.5 rounded bg-black/5 dark:bg-white/10 border ${t.border} font-bold tracking-wider`}>{g.rules}</span>
                               </div>
-                              
-                              {/* Hover Highlight Overlay */}
-                              <div className={`absolute inset-0 opacity-0 group-hover:opacity-10 pointer-events-none transition-opacity duration-300 ${t.accent}`}></div>
                             </div>
                           );
                         })}
@@ -1355,35 +1799,347 @@
                    </div>
                  )}
               </div>
+            ) : view === "play-setup" ? (
+              <div className="w-full flex-1 flex flex-col items-center justify-center min-h-[85vh] relative z-10 animate-fade-in px-4">
+                 <div className={`w-full max-w-lg ${t.panel} border ${t.border} rounded-[2rem] p-8 md:p-10 shadow-2xl backdrop-blur-md`}>
+                    <div className="flex flex-col items-center mb-8">
+                       <div className={`w-20 h-20 rounded-2xl ${t.accent} bg-opacity-20 flex items-center justify-center border border-current mb-4 shadow-[0_0_30px_rgba(0,0,0,0.15)] ${t.accentText}`}>
+                          <Gamepad2 size={40} />
+                       </div>
+                       <h2 className={`text-3xl font-black ${t.text} tracking-tight`}>Play NexusOS</h2>
+                       <p className={`text-sm font-bold ${t.textMuted} uppercase tracking-widest mt-2`}>Neural Chess Engine</p>
+                    </div>
+
+                    <div className="space-y-8">
+                       <div>
+                          <div className="flex justify-between items-end mb-4">
+                             <label className={`text-xs font-black uppercase tracking-wider ${t.textMuted}`}>Engine Level <span className={`ml-2 text-lg ${t.text}`}>{playConfig.level}</span></label>
+                             <div className="text-right">
+                               <span className={`text-[10px] font-bold uppercase tracking-wider ${t.textMuted}`}>Est. Rating</span>
+                               <div className={`text-lg font-mono font-black ${t.accentText}`}>{getBotElo(playConfig.level)}</div>
+                             </div>
+                          </div>
+                          <div className="relative pt-2">
+                             <input type="range" min="1" max="15" value={playConfig.level} onChange={(e) => setPlayConfig({...playConfig, level: parseInt(e.target.value)})} style={{'--accent-color': appTheme === 'neon' ? '#06b6d4' : '#81b64c'}}/>
+                          </div>
+                       </div>
+
+                       <div>
+                          <label className={`text-xs font-black uppercase tracking-wider ${t.textMuted} mb-3 block`}>Time Control</label>
+                          <div className="grid grid-cols-4 gap-2">
+                             {[{t: '1', l: '1 min'}, {t: '3', l: '3 min'}, {t: '3+2', l: '3 | 2'}, {t: '5', l: '5 min'}, {t: '10', l: '10 min'}, {t: '10+2', l: '10 | 2'}, {t: '15+10', l: '15 | 10'}, {t: '30', l: '30 min'}].map(tc => (
+                                <button key={tc.t} onClick={() => setPlayConfig({...playConfig, time: tc.t})} className={`py-3 rounded-xl text-xs font-black border transition-all ${playConfig.time === tc.t ? `${t.accent} ${appTheme==='neon'?'text-black':'text-white'} border-transparent shadow-md scale-[1.02]` : `${t.panelInner} ${t.text} ${t.border} hover:bg-black/5 dark:hover:bg-white/5`}`}>
+                                   {tc.l}
+                                </button>
+                             ))}
+                          </div>
+                       </div>
+
+                       <div>
+                          <label className={`text-xs font-black uppercase tracking-wider ${t.textMuted} mb-3 block`}>Play As</label>
+                          <div className="flex gap-3">
+                             <button onClick={() => setPlayConfig({...playConfig, color: 'w'})} className={`flex-1 py-4 rounded-xl flex items-center justify-center border transition-all ${playConfig.color === 'w' ? `border-gray-800 bg-white shadow-lg scale-105` : `${t.panelInner} ${t.border} hover:bg-black/5 dark:hover:bg-white/5`}`}>
+                                <div className="w-5 h-5 rounded border-2 border-gray-400 bg-white"></div>
+                             </button>
+                             <button onClick={() => setPlayConfig({...playConfig, color: 'random'})} className={`flex-1 py-4 rounded-xl flex items-center justify-center border transition-all font-black text-xl ${playConfig.color === 'random' ? `${t.accent} border-transparent shadow-lg scale-105 ${appTheme==='neon'?'text-black':'text-white'}` : `${t.panelInner} ${t.text} ${t.border} hover:bg-black/5 dark:hover:bg-white/5`}`}>
+                                ?
+                             </button>
+                             <button onClick={() => setPlayConfig({...playConfig, color: 'b'})} className={`flex-1 py-4 rounded-xl flex items-center justify-center border transition-all ${playConfig.color === 'b' ? `border-black bg-black shadow-lg scale-105` : `${t.panelInner} ${t.border} hover:bg-black/5 dark:hover:bg-white/5`}`}>
+                                <div className="w-5 h-5 rounded border-2 border-gray-600 bg-black"></div>
+                             </button>
+                          </div>
+                       </div>
+                       
+                       <div>
+                          <label className={`text-xs font-black uppercase tracking-wider ${t.textMuted} mb-3 block`}>Match Style</label>
+                          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                             <button onClick={() => setPlayConfig({...playConfig, mode: 'friendly'})} className={`p-4 rounded-xl flex flex-col items-center justify-center border transition-all text-center ${playConfig.mode === 'friendly' ? `${t.accent} ${appTheme==='neon'?'text-black':'text-white'} shadow-lg scale-105` : `${t.panelInner} ${t.text} ${t.border} hover:bg-black/5 dark:hover:bg-white/5`}`}>
+                                <Lightbulb size={24} className="mb-2" />
+                                <span className="font-bold text-sm">Friendly</span>
+                                <span className="text-[9px] uppercase mt-1 opacity-70">Takebacks & Hints</span>
+                             </button>
+                             <button onClick={() => setPlayConfig({...playConfig, mode: 'casual'})} className={`p-4 rounded-xl flex flex-col items-center justify-center border transition-all text-center ${playConfig.mode === 'casual' ? `${t.accent} ${appTheme==='neon'?'text-black':'text-white'} shadow-lg scale-105` : `${t.panelInner} ${t.text} ${t.border} hover:bg-black/5 dark:hover:bg-white/5`}`}>
+                                <Undo2 size={24} className="mb-2" />
+                                <span className="font-bold text-sm">Casual</span>
+                                <span className="text-[9px] uppercase mt-1 opacity-70">Takebacks Only</span>
+                             </button>
+                             <button onClick={() => setPlayConfig({...playConfig, mode: 'challenging'})} className={`p-4 rounded-xl flex flex-col items-center justify-center border transition-all text-center ${playConfig.mode === 'challenging' ? `${t.accent} ${appTheme==='neon'?'text-black':'text-white'} shadow-lg scale-105` : `${t.panelInner} ${t.text} ${t.border} hover:bg-black/5 dark:hover:bg-white/5`}`}>
+                                <Swords size={24} className="mb-2" />
+                                <span className="font-bold text-sm">Challenging</span>
+                                <span className="text-[9px] uppercase mt-1 opacity-70">No Assistance</span>
+                             </button>
+                          </div>
+                       </div>
+
+                       <button onClick={handlePlayStart} className={`w-full py-5 rounded-2xl ${t.accent} ${appTheme==='neon'?'text-black':'text-white'} font-black text-lg uppercase tracking-widest hover:brightness-110 active:scale-95 transition-all shadow-[0_0_30px_rgba(0,0,0,0.15)] mt-4`}>
+                         Start Match
+                       </button>
+                    </div>
+                 </div>
+              </div>
+            ) : view === "playing" ? (
+              <div className="flex flex-col lg:flex-row gap-6 lg:gap-10 w-full max-w-6xl mx-auto justify-center items-start animate-fade-in px-4">
+                 
+                 {/* GAME OVER OVERLAY */}
+                 {playGameStatus && (
+                    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm animate-fade-in px-4">
+                       <div className={`relative p-8 md:p-10 rounded-3xl ${t.panel} border border-white/20 shadow-2xl flex flex-col items-center max-w-sm w-full text-center overflow-hidden transform scale-100 animate-pop`}>
+                          
+                          <div className="text-7xl mb-4 drop-shadow-md">
+                             {playGameStatus === 'win' ? '🏆' : playGameStatus === 'loss' ? '💀' : '🤝'}
+                          </div>
+                          
+                          <h2 className={`relative z-10 text-4xl font-black mb-2 tracking-tighter ${playGameStatus === 'win' ? 'text-[#81b64c]' : playGameStatus === 'loss' ? 'text-[#ca3431]' : t.text}`}>
+                             {playGameStatus === 'win' ? 'VICTORY' : playGameStatus === 'loss' ? 'DEFEAT' : 'DRAW'}
+                          </h2>
+                          <p className={`relative z-10 text-xs font-bold uppercase ${t.textMuted} mb-8`}>Match Terminated</p>
+                          
+                          <div className="flex flex-col gap-3 w-full relative z-10">
+                             <button onClick={handleBotGameReview} className={`w-full py-3.5 rounded-xl font-black text-sm uppercase tracking-widest ${t.accent} ${appTheme==='neon'?'text-black':'text-white'} hover:brightness-110 active:scale-95 transition-all flex items-center justify-center gap-2 shadow-md`}>
+                                <FileText size={18} /> Game Review
+                             </button>
+                             <button onClick={() => setView('play-setup')} className={`w-full py-3.5 rounded-xl font-black text-sm uppercase tracking-widest bg-transparent border-2 ${t.border} ${t.text} hover:bg-black/5 dark:hover:bg-white/5 active:scale-95 transition-all flex items-center justify-center gap-2`}>
+                                <RefreshCcw size={18} /> Play Again
+                             </button>
+                          </div>
+                       </div>
+                    </div>
+                 )}
+
+                 {/* LEFT PANEL: Live Match Moves (Moves to bottom on phone) */}
+                 <div className={`order-2 lg:order-1 w-full lg:w-[300px] xl:w-[350px] ${t.panel} rounded-2xl flex flex-col h-[350px] lg:h-[calc(100vh-8rem)] lg:sticky lg:top-20 overflow-hidden border ${t.border} shadow-2xl shrink-0 mt-6 lg:mt-0`}>
+                    <div className={`p-4 border-b ${t.border} bg-black/5 dark:bg-white/5`}>
+                       <h3 className={`text-xs font-black uppercase tracking-widest ${t.text} flex items-center gap-2`}><Activity size={14} className={t.accentText} /> Match Live Log</h3>
+                    </div>
+                    
+                    <div className="flex-1 overflow-y-auto p-4 custom-scrollbar">
+                       <div className="flex flex-wrap gap-1.5 content-start">
+                          {playMovePairs.length === 0 ? (
+                             <div className={`text-xs font-medium italic ${t.textMuted} mt-4 text-center w-full`}>Awaiting first move...</div>
+                          ) : (
+                             playMovePairs.map((pair, idx) => (
+                                <React.Fragment key={idx}>
+                                   <div className={`text-[11px] px-2 py-1.5 rounded-lg border bg-black/5 dark:bg-white/5 border-black/5 dark:border-white/5 ${t.text} shadow-sm flex items-center gap-1`}>
+                                      <span className={t.textMuted}>{idx + 1}.</span> {formatSan(pair.w.san)}
+                                   </div>
+                                   {pair.b && (
+                                      <div className={`text-[11px] px-2 py-1.5 rounded-lg border bg-black/5 dark:bg-white/5 border-black/5 dark:border-white/5 ${t.text} shadow-sm flex items-center gap-1`}>
+                                         {formatSan(pair.b.san)}
+                                      </div>
+                                   )}
+                                </React.Fragment>
+                             ))
+                          )}
+                       </div>
+                    </div>
+                 </div>
+
+                 {/* CENTER PANEL: Board */}
+                 <div className="order-1 lg:order-2 flex flex-col items-center justify-start w-full lg:flex-1 lg:max-w-[70vh] xl:max-w-[75vh]">
+                    <div className="flex w-full justify-center items-stretch my-2 md:my-4 flex-col">
+                      
+                      <PlayerBanner 
+                        name={`NexusOS AI Lvl ${playConfig.level}`} 
+                        rating={getBotElo(playConfig.level)}
+                        capturedPieces={playPlayerColor === 'w' ? playMat.whiteCapturedList : playMat.blackCapturedList}
+                        advantage={playPlayerColor === 'w' ? playMat.whiteAdvantage : playMat.blackAdvantage}
+                        clock={formatPlayClock(playPlayerColor === 'w' ? playClocks.b : playClocks.w)}
+                        isBottom={false} isPlayMode={true} t={t} isFlipped={false}
+                      />
+
+                      <div className="w-full aspect-square rounded shadow-2xl relative select-none shrink-0 border-4 border-transparent ring-2 ring-black/10 dark:ring-white/10 my-2">
+                        <div className="grid grid-cols-8 grid-rows-8 w-full h-full absolute inset-0 z-0 rounded overflow-hidden">
+                          {Array.from({length: 64}).map((_, i) => {
+                            const visualRow = Math.floor(i / 8);
+                            const visualCol = i % 8;
+                            const r = playPlayerColor === 'b' ? 7 - visualRow : visualRow;
+                            const c = playPlayerColor === 'b' ? 7 - visualCol : visualCol;
+                            const sq = String.fromCharCode(97 + c) + (8 - r);
+                            const isDark = (visualRow + visualCol) % 2 === 1;
+                            const isSelected = selectedSquare === sq;
+                            
+                            const lastPlayMove = playBoard.history({verbose: true}).slice(-1)[0];
+                            const isLastMoveStart = lastPlayMove && lastPlayMove.from === sq;
+                            const isLastMoveEnd = lastPlayMove && lastPlayMove.to === sq;
+                            
+                            const highlightColor = (showHighlights && (isSelected || isLastMoveStart || isLastMoveEnd)) ? 'bg-[#f5f682]/60' : '';
+
+                            return (
+                              <div key={`play_bg_${sq}`} className={`relative w-full h-full ${isDark ? bt.dark : bt.light}`}>
+                                {highlightColor && <div className={`absolute inset-0 ${highlightColor}`}></div>}
+                                {showCoords && visualCol === 0 && <span className={`absolute top-0.5 left-1 text-[8px] md:text-[10px] font-bold z-0 ${isDark ? 'text-white/70' : 'text-black/50'}`}>{8 - r}</span>}
+                                {showCoords && visualRow === 7 && <span className={`absolute bottom-0.5 right-1 text-[8px] md:text-[10px] font-bold z-0 ${isDark ? 'text-white/70' : 'text-black/50'}`}>{String.fromCharCode(97 + c)}</span>}
+                              </div>
+                            );
+                          })}
+                        </div>
+
+                        <svg className="absolute inset-0 w-full h-full pointer-events-none z-30">
+                          <defs>
+                            <marker id="playArrowhead" markerWidth="4" markerHeight="4" refX="2.8" refY="2" orient="auto">
+                              <polygon points="0 0, 4 2, 0 4" fill={bestArrowColor} opacity="0.9" />
+                            </marker>
+                            <filter id="playArrowShadow" x="-20%" y="-20%" width="140%" height="140%">
+                              <feDropShadow dx="1" dy="2" stdDeviation="2" floodOpacity="0.5" />
+                            </filter>
+                          </defs>
+                          {playHint && playHint.length >= 4 && (
+                            <line 
+                              x1={`${getSquareCoordinates(playHint.substring(0,2)).x}%`} y1={`${getSquareCoordinates(playHint.substring(0,2)).y}%`}
+                              x2={`${getSquareCoordinates(playHint.substring(2,4)).x}%`} y2={`${getSquareCoordinates(playHint.substring(2,4)).y}%`}
+                              stroke={bestArrowColor} strokeWidth="1.5%" strokeOpacity="0.85" markerEnd="url(#playArrowhead)" strokeLinecap="round" filter="url(#playArrowShadow)"
+                            />
+                          )}
+                        </svg>
+
+                        <div className="absolute inset-0 z-20 pointer-events-none">
+                          {Object.values((() => {
+                            const pieces = {}; 
+                            for(let r=0; r<8; r++) {
+                              for(let c=0; c<8; c++) {
+                                const sq = String.fromCharCode(97+c) + (8-r);
+                                const p = playBoard.get(sq);
+                                if (p) pieces[sq] = { id: `${p.color}${p.type}_play_${sq}`, type: p.type, color: p.color, sq: sq };
+                              }
+                            }
+                            return pieces;
+                          })()).map((p, idx) => {
+                            const coords = getSquareCoordinates(p.sq);
+                            const isDragging = dragState && dragState.startSq === p.sq;
+                            let tx = 0, ty = 0;
+                            let tClass = fastAnimations ? "" : "piece-animate";
+                            let zClass = "z-20";
+                            
+                            if (isDragging) {
+                               tx = dragState.curX - dragState.startX; ty = dragState.curY - dragState.startY;
+                               tClass = "piece-drag"; zClass = "z-50";
+                            } else if (selectedSquare === p.sq) {
+                               ty = -4; 
+                            }
+
+                            let kingStatus = null;
+                            if (playGameStatus && p.type === 'k') {
+                               if (playGameStatus === 'win') {
+                                  kingStatus = p.color === playPlayerColor ? '🏆' : '💀';
+                               } else if (playGameStatus === 'loss') {
+                                  kingStatus = p.color === playPlayerColor ? '💀' : '🏆';
+                               } else if (playGameStatus === 'draw') {
+                                  kingStatus = '🤝';
+                               }
+                            }
+
+                            return (
+                              <React.Fragment key={`${p.id}_${idx}`}>
+                                <img 
+                                  src={`https://images.chesscomfiles.com/chess-themes/pieces/${pieceSet}/150/${p.color}${p.type}.png`}
+                                  className={`absolute w-[12.5%] h-[12.5%] drop-shadow-md pointer-events-none ${tClass} ${zClass}`}
+                                  style={{ left: `${coords.x - 6.25}%`, top: `${coords.y - 6.25}%`, transform: `translate(${tx}px, ${ty}px) scale(${isDragging || selectedSquare === p.sq ? 1.15 : 0.95})`, opacity: blindfoldMode ? 0 : 1 }}
+                                  alt={`${p.color}${p.type}`} draggable={false}
+                                />
+                                {kingStatus && (
+                                  <div 
+                                    className="absolute flex items-center justify-center pointer-events-none z-50 text-3xl drop-shadow-xl animate-pop"
+                                    style={{ left: `${coords.x - 6.25}%`, top: `${coords.y - 12}%`, width: '12.5%', height: '12.5%', transform: `translate(${tx}px, ${ty}px)` }}
+                                  >
+                                    {kingStatus}
+                                  </div>
+                                )}
+                              </React.Fragment>
+                            );
+                          })}
+                        </div>
+
+                        <div 
+                          className="absolute inset-0 z-50 grid grid-cols-8 grid-rows-8 w-full h-full touch-none select-none"
+                          ref={boardDOMRef} onPointerMove={handleGridPointerMove} onPointerUp={handleGridPointerUp} onPointerLeave={handleGridPointerUp} onContextMenu={(e) => e.preventDefault()}
+                        >
+                          {Array.from({length: 64}).map((_, i) => {
+                            const visualRow = Math.floor(i / 8);
+                            const visualCol = i % 8;
+                            const r = playPlayerColor === 'b' ? 7 - visualRow : visualRow;
+                            const c = playPlayerColor === 'b' ? 7 - visualCol : visualCol;
+                            const sq = String.fromCharCode(97 + c) + (8 - r);
+                            
+                            let isValidMove = false;
+                            if (selectedSquare) {
+                               try { isValidMove = playBoard.moves({square: selectedSquare, verbose: true}).map(m=>m.to).includes(sq); } catch(e){}
+                            }
+
+                            return (
+                              <div key={`play_interact_${sq}`} onPointerDown={(e) => handleGridPointerDown(e, sq)} className="relative w-full h-full cursor-pointer transition-colors">
+                                {showLegalMoves && isValidMove && (
+                                   <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-40">
+                                     {playBoard.get(sq) ? <div className="w-[85%] h-[85%] rounded-full border-[6px] border-[rgba(0,0,0,0.3)]"></div> : <div className="w-[30%] h-[30%] rounded-full bg-[rgba(0,0,0,0.3)]"></div>}
+                                   </div>
+                                )}
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    </div>
+
+                    <PlayerBanner 
+                      name={playPlayerColor === 'w' ? 'Guest' : `NexusOS AI Lvl ${playConfig.level}`} 
+                      rating={playPlayerColor === 'w' ? 1200 : getBotElo(playConfig.level)}
+                      capturedPieces={playPlayerColor === 'w' ? playMat.blackCapturedList : playMat.whiteCapturedList}
+                      advantage={playPlayerColor === 'w' ? playMat.blackAdvantage : playMat.whiteAdvantage}
+                      clock={formatPlayClock(playPlayerColor === 'w' ? playClocks.w : playClocks.b)}
+                      isBottom={true} isPlayMode={true} t={t} isFlipped={false}
+                    />
+
+                    {/* ACTIONS BAR (Directly Below Board) */}
+                    <div className="flex gap-3 mt-5 justify-center w-full max-w-[500px] mx-auto">
+                       {playConfig.mode !== 'challenging' && (
+                         <>
+                           <button onClick={handleTakeback} disabled={playBoard.history().length < 2 || playGameStatus} className={`flex-1 py-3.5 rounded-xl border ${t.border} ${t.panelInner} ${t.text} text-xs font-bold uppercase tracking-wider hover:bg-black/5 dark:hover:bg-white/5 disabled:opacity-30 transition-all shadow-sm flex items-center justify-center gap-2`}>
+                              <Undo2 size={16} /> Undo
+                           </button>
+                           {playConfig.mode === 'friendly' && (
+                             <button onClick={requestHint} disabled={playGameStatus || playBoard.turn() !== playPlayerColor || isHintLoading} className={`flex-1 py-3.5 rounded-xl border ${t.border} ${t.panelInner} ${t.text} text-xs font-bold uppercase tracking-wider hover:bg-black/5 dark:hover:bg-white/5 disabled:opacity-30 transition-all shadow-sm flex items-center justify-center gap-2`}>
+                                {isHintLoading ? <Loader2 size={16} className="animate-spin text-[#06b6d4]" /> : <Lightbulb size={16} className={t.accentText} />} {isHintLoading ? 'Thinking' : 'Hint'}
+                             </button>
+                           )}
+                         </>
+                       )}
+                       <button onClick={() => setPlayGameStatus('loss')} className={`px-5 py-3.5 rounded-xl border border-red-500/30 bg-red-500/10 text-red-600 dark:text-red-400 text-xs font-bold uppercase tracking-wider hover:bg-red-500/20 transition-all shadow-sm flex-1 max-w-[120px]`}>
+                         Resign
+                       </button>
+                    </div>
+
+                 </div>
+
+              </div>
             ) : view === "workspace" ? (
-              <div className="flex flex-col lg:flex-row gap-4 lg:gap-8 h-full items-start">
+              <div className="flex flex-col lg:flex-row gap-4 lg:gap-8 w-full max-w-6xl mx-auto justify-center items-start animate-fade-in">
                 
                 {/* --- Left Column: Chess Board Area --- */}
-                <div className="flex flex-col items-center justify-start lg:justify-center w-full lg:w-auto lg:shrink-0 lg:flex-1 h-full">
+                <div className="flex flex-col items-center justify-start w-full lg:flex-1 lg:max-w-[70vh] xl:max-w-[75vh]">
                   
-                  <div className="flex w-full max-w-[90vw] sm:max-w-[500px] md:max-w-[550px] lg:max-w-[65vh] xl:max-w-[75vh] justify-center items-stretch my-2 md:my-4 flex-col">
+                  <div className="flex w-full justify-center items-stretch my-2 md:my-4 flex-col">
                     <PlayerBanner 
                       name={isFlipped ? (fullGame.header().White || 'White Player') : (fullGame.header().Black || 'Black Player')} 
                       rating={isFlipped ? fullGame.header().WhiteElo : fullGame.header().BlackElo}
                       capturedPieces={isFlipped ? mat.whiteCapturedList : mat.blackCapturedList}
                       advantage={isFlipped ? mat.whiteAdvantage : mat.blackAdvantage}
                       clock={isFlipped ? whiteTime : blackTime}
-                      isBottom={false}
+                      isBottom={false} t={t} isFlipped={isFlipped}
                     />
 
-                    {/* BOARD CONTAINER: Max-Width scaled by Viewport Height (vh) to prevent scrolling */}
-                    <div className="flex w-full justify-center items-stretch mt-2 mb-2">
-                      {/* Left Eval Bar */}
-                      <div className={`w-4 md:w-6 ${t.panelInner} mr-2 md:mr-3 rounded overflow-hidden flex flex-col relative border ${t.border} shadow-lg shrink-0`}>
-                        <div className="w-full bg-black eval-animate" style={{ height: `${Math.max(5, Math.min(95, 50 + (evaluation * 5)))}%` }}></div>
-                        <div className="w-full bg-white flex-1 eval-animate"></div>
-                        <span className={`absolute ${evaluation > 0 ? 'bottom-1 text-black' : 'top-1 text-white'} w-full text-center text-[9px] md:text-[10px] font-bold`}>{Math.abs(evaluation).toFixed(1)}</span>
-                      </div>
+                    <div className="flex w-full justify-center items-stretch mt-2 mb-2 relative">
+                      {showEvalBar && (
+                        <div className={`w-4 md:w-6 ${t.panelInner} mr-2 md:mr-3 rounded overflow-hidden flex flex-col relative border ${t.border} shadow-inner shrink-0`}>
+                          {deepAnalyzing && (
+                            <div className="absolute inset-0 z-30 bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0IiBoZWlnaHQ9IjQiPgo8cmVjdCB3aWR0aD0iNCIgaGVpZ2h0PSI0IiBmaWxsPSIjZmZmIiBmaWxsLW9wYWNpdHk9IjAuMSIvPgo8L3N2Zz4=')] opacity-50 animate-pulse"></div>
+                          )}
+                          <div className="w-full bg-black eval-animate" style={{ height: `${Math.max(5, Math.min(95, 50 + (evaluation * 5)))}%`, filter: deepAnalyzing ? 'blur(1px)' : 'none' }}></div>
+                          <div className="w-full bg-white flex-1 eval-animate" style={{ filter: deepAnalyzing ? 'blur(1px)' : 'none' }}></div>
+                          {!deepAnalyzing && <span className={`absolute ${evaluation > 0 ? 'bottom-1 text-black' : 'top-1 text-white'} w-full text-center text-[9px] md:text-[10px] font-bold z-20`}>{Math.abs(evaluation).toFixed(1)}</span>}
+                        </div>
+                      )}
 
-                      {/* THE CHESS BOARD */}
-                      <div className="w-full aspect-square rounded shadow-2xl relative select-none shrink-0 border-4 border-transparent ring-2 ring-black/20 dark:ring-white/10">
+                      <div className="w-full aspect-square rounded shadow-2xl relative select-none shrink-0 border-4 border-transparent ring-2 ring-black/10 dark:ring-white/5">
                         
-                        {/* Grid Background */}
                         <div className="grid grid-cols-8 grid-rows-8 w-full h-full absolute inset-0 z-0 rounded overflow-hidden">
                           {Array.from({length: 64}).map((_, i) => {
                             const visualRow = Math.floor(i / 8);
@@ -1399,19 +2155,18 @@
                             const isLastMoveEnd = currentMoveIndex >= 0 && history[currentMoveIndex]?.to === sq;
                             
                             const cellColor = isDark ? bt.dark : bt.light;
-                            const highlightColor = (isSelected || isLastMoveStart || isLastMoveEnd) ? 'bg-[#f5f682]/60' : '';
+                            const highlightColor = (showHighlights && (isSelected || isLastMoveStart || isLastMoveEnd)) ? 'bg-[#f5f682]/60' : '';
 
                             return (
                               <div key={`bg_${sq}`} className={`relative w-full h-full ${cellColor}`}>
                                 {highlightColor && <div className={`absolute inset-0 ${highlightColor}`}></div>}
-                                {visualCol === 0 && <span className={`absolute top-0.5 left-1 text-[8px] md:text-[10px] font-bold z-0 ${isDark ? 'text-white/70' : 'text-black/50'}`}>{8 - r}</span>}
-                                {visualRow === 7 && <span className={`absolute bottom-0.5 right-1 text-[8px] md:text-[10px] font-bold z-0 ${isDark ? 'text-white/70' : 'text-black/50'}`}>{String.fromCharCode(97 + c)}</span>}
+                                {showCoords && visualCol === 0 && <span className={`absolute top-0.5 left-1 text-[8px] md:text-[10px] font-bold z-0 ${isDark ? 'text-white/70' : 'text-black/50'}`}>{8 - r}</span>}
+                                {showCoords && visualRow === 7 && <span className={`absolute bottom-0.5 right-1 text-[8px] md:text-[10px] font-bold z-0 ${isDark ? 'text-white/70' : 'text-black/50'}`}>{String.fromCharCode(97 + c)}</span>}
                               </div>
                             );
                           })}
                         </div>
 
-                        {/* Engine Arrow SVG Layer (UNDER pieces) */}
                         <svg className="absolute inset-0 w-full h-full pointer-events-none z-10">
                           <defs>
                             <marker id="arrowhead" markerWidth="4" markerHeight="4" refX="2.8" refY="2" orient="auto">
@@ -1421,82 +2176,68 @@
                               <feDropShadow dx="1" dy="2" stdDeviation="2" floodOpacity="0.5" />
                             </filter>
                           </defs>
-                          {bestMove && bestMove.length >= 4 && activeTab !== 'details' && (
+                          {!deepAnalyzing && bestMove && bestMove.length >= 4 && activeTab !== 'details' && (
                             <line 
-                              x1={`${getSquareCoordinates(bestMove.substring(0,2)).x}%`} 
-                              y1={`${getSquareCoordinates(bestMove.substring(0,2)).y}%`}
-                              x2={`${getSquareCoordinates(bestMove.substring(2,4)).x}%`} 
-                              y2={`${getSquareCoordinates(bestMove.substring(2,4)).y}%`}
-                              stroke={bestArrowColor} strokeWidth="1.5%" strokeOpacity="0.85"
-                              markerEnd="url(#arrowhead)"
-                              strokeLinecap="round"
-                              filter="url(#arrowShadow)"
+                              x1={`${getSquareCoordinates(bestMove.substring(0,2)).x}%`} y1={`${getSquareCoordinates(bestMove.substring(0,2)).y}%`}
+                              x2={`${getSquareCoordinates(bestMove.substring(2,4)).x}%`} y2={`${getSquareCoordinates(bestMove.substring(2,4)).y}%`}
+                              stroke={bestArrowColor} strokeWidth="1.5%" strokeOpacity="0.85" markerEnd="url(#arrowhead)" strokeLinecap="round" filter="url(#arrowShadow)"
                             />
                           )}
                         </svg>
 
-                        {/* SMOOTH Animated Pieces Layer */}
                         <div className="absolute inset-0 z-20 pointer-events-none">
                           {animatedPieces.map(p => {
                             const coords = getSquareCoordinates(p.sq);
                             const isDragging = dragState && dragState.startSq === p.sq && currentBoard.get(p.sq)?.color === currentBoard.turn();
                             
                             let tx = 0, ty = 0;
-                            let tClass = "piece-animate";
+                            let tClass = fastAnimations ? "" : "piece-animate";
                             let zClass = "z-20";
                             
                             if (isDragging) {
-                               tx = dragState.curX - dragState.startX;
-                               ty = dragState.curY - dragState.startY;
-                               tClass = "piece-drag"; // Disable CSS transition immediately to attach to pointer
-                               zClass = "z-50";
+                               tx = dragState.curX - dragState.startX; ty = dragState.curY - dragState.startY;
+                               tClass = "piece-drag"; zClass = "z-50";
                             } else if (selectedSquare === p.sq) {
-                               ty = -4; // bounce selected piece
+                               ty = -4; 
                             }
 
                             return (
                               <img 
-                                key={p.id}
-                                src={`https://images.chesscomfiles.com/chess-themes/pieces/neo/150/${p.color}${p.type}.png`}
+                                key={p.id} src={`https://images.chesscomfiles.com/chess-themes/pieces/${pieceSet}/150/${p.color}${p.type}.png`}
                                 className={`absolute w-[12.5%] h-[12.5%] drop-shadow-md pointer-events-none ${tClass} ${zClass}`}
-                                style={{ 
-                                  left: `${coords.x - 6.25}%`, 
-                                  top: `${coords.y - 6.25}%`,
-                                  transform: `translate(${tx}px, ${ty}px) scale(${isDragging || selectedSquare === p.sq ? 1.15 : 0.95})`
-                                }}
-                                alt={`${p.color}${p.type}`}
-                                draggable={false}
+                                style={{ left: `${coords.x - 6.25}%`, top: `${coords.y - 6.25}%`, transform: `translate(${tx}px, ${ty}px) scale(${isDragging || selectedSquare === p.sq ? 1.15 : 0.95})`, opacity: blindfoldMode ? 0 : 1 }}
+                                alt={`${p.color}${p.type}`} draggable={false}
                               />
                             );
                           })}
                         </div>
 
-                        {/* Rating Badges Layer */}
                         <div className="absolute inset-0 w-full h-full pointer-events-none z-30">
-                          {currentMoveIndex >= 0 && history[currentMoveIndex]?.quality && (
-                            <div 
-                              key={`live_badge_${currentMoveIndex}_${history[currentMoveIndex].quality.id}`} 
-                              className="absolute w-5 h-5 md:w-6 md:h-6 rounded-full flex items-center justify-center text-white font-black text-[9px] md:text-[11px] border-[1.5px] border-white shadow-lg animate-pop transition-colors duration-300"
-                              style={{ 
-                                backgroundColor: history[currentMoveIndex].quality.color,
-                                left: `${getSquareCoordinates(history[currentMoveIndex].to).x + 3}%`, 
-                                top: `${getSquareCoordinates(history[currentMoveIndex].to).y - 6}%`,
-                                transform: 'translate(-50%, -50%)'
-                              }}
-                            >
-                              {history[currentMoveIndex].quality.icon}
-                            </div>
+                          {currentMoveIndex >= 0 && history[currentMoveIndex] && (
+                            (!history[currentMoveIndex].quality || (deepAnalyzing && history[currentMoveIndex].isBranch)) ? (
+                              <div 
+                                className={`absolute w-[22px] h-[22px] md:w-[26px] md:h-[26px] transition-all flex items-center justify-center pointer-events-none z-40`}
+                                style={{ left: `${getSquareCoordinates(history[currentMoveIndex].to).x + 5.5}%`, top: `${getSquareCoordinates(history[currentMoveIndex].to).y - 5.5}%`, transform: 'translate(-50%, -50%)' }}
+                              >
+                                 <div className="piece-loader" style={{'--p-color1': appTheme === 'light' ? '#333' : '#fff', '--p-color2': '#22c55e' }}></div>
+                              </div>
+                            ) : history[currentMoveIndex].quality && (
+                              <div 
+                                key={`live_badge_${currentMoveIndex}_${history[currentMoveIndex].quality.id}`}
+                                className="absolute w-[22px] h-[22px] md:w-[26px] md:h-[26px] rounded-full flex items-center justify-center text-white font-black border-[2px] border-white shadow-xl transition-colors duration-300 animate-pop z-40"
+                                style={{ backgroundColor: history[currentMoveIndex].quality.color, left: `${getSquareCoordinates(history[currentMoveIndex].to).x + 5.5}%`, top: `${getSquareCoordinates(history[currentMoveIndex].to).y - 5.5}%`, transform: 'translate(-50%, -50%)' }}
+                              >
+                                <span className="flex items-center justify-center leading-none tracking-tighter" style={{ fontSize: history[currentMoveIndex].quality.icon.length > 1 ? '10px' : '14px' }}>
+                                  {history[currentMoveIndex].quality.icon}
+                                </span>
+                              </div>
+                            )
                           )}
                         </div>
 
-                        {/* INTERACTION GRID (z-50) catches all clicks and drags smoothly */}
                         <div 
                           className="absolute inset-0 z-50 grid grid-cols-8 grid-rows-8 w-full h-full touch-none select-none"
-                          ref={boardDOMRef}
-                          onPointerMove={handleGridPointerMove}
-                          onPointerUp={handleGridPointerUp}
-                          onPointerLeave={handleGridPointerUp}
-                          onContextMenu={(e) => e.preventDefault()}
+                          ref={boardDOMRef} onPointerMove={handleGridPointerMove} onPointerUp={handleGridPointerUp} onPointerLeave={handleGridPointerUp} onContextMenu={(e) => e.preventDefault()}
                         >
                           {Array.from({length: 64}).map((_, i) => {
                             const visualRow = Math.floor(i / 8);
@@ -1507,18 +2248,10 @@
                             const isValidMove = validTargetSquares.includes(sq);
 
                             return (
-                              <div 
-                                key={`interact_${sq}`} 
-                                onPointerDown={(e) => handleGridPointerDown(e, sq)}
-                                className="relative w-full h-full cursor-pointer hover:bg-black/10 dark:hover:bg-white/10 transition-colors"
-                              >
-                                {isValidMove && (
+                              <div key={`interact_${sq}`} onPointerDown={(e) => handleGridPointerDown(e, sq)} className="relative w-full h-full cursor-pointer transition-colors">
+                                {showLegalMoves && isValidMove && (
                                    <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-40">
-                                     {currentBoard.get(sq) ? (
-                                       <div className="w-[85%] h-[85%] rounded-full border-[6px] border-black/40 shadow-[0_2px_4px_rgba(0,0,0,0.2)]"></div>
-                                     ) : (
-                                       <div className="w-[30%] h-[30%] rounded-full bg-black/40 shadow-[0_2px_4px_rgba(0,0,0,0.2)]"></div>
-                                     )}
+                                     {currentBoard.get(sq) ? <div className="w-[85%] h-[85%] rounded-full border-[6px] border-[rgba(0,0,0,0.3)]"></div> : <div className="w-[30%] h-[30%] rounded-full bg-[rgba(0,0,0,0.3)]"></div>}
                                    </div>
                                 )}
                               </div>
@@ -1534,13 +2267,12 @@
                       capturedPieces={isFlipped ? mat.blackCapturedList : mat.whiteCapturedList}
                       advantage={isFlipped ? mat.blackAdvantage : mat.whiteAdvantage}
                       clock={isFlipped ? blackTime : whiteTime}
-                      isBottom={true}
+                      isBottom={true} t={t} isFlipped={isFlipped}
                     />
                   </div>
                 </div>
 
-                {/* --- Right Column: Analysis Panel (Sticky on Desktop) --- */}
-                <div className={`w-full lg:w-[400px] xl:w-[450px] ${t.panel} rounded-2xl flex flex-col h-[600px] lg:h-[calc(100vh-6rem)] lg:sticky lg:top-12 lg:mb-12 overflow-hidden border ${t.border} shadow-2xl shrink-0 mt-6 lg:mt-0`}>
+                <div className={`w-full lg:w-[350px] xl:w-[400px] flex flex-col h-[500px] lg:h-[min(80vh,800px)] rounded-2xl ${t.panel} border ${t.border} shadow-2xl shrink-0 mt-6 lg:mt-0 overflow-hidden`}>
                   
                   <div className={`flex border-b ${t.border} shrink-0`}>
                      <button onClick={()=>setActiveTab('report')} className={`flex-1 py-4 text-xs uppercase font-bold border-b-2 ${activeTab==='report'?`border-[${t.accentText.split('-')[1]}] ${t.text}`:`border-transparent ${t.textMuted} hover:${t.text}`}`}>Report</button>
@@ -1554,57 +2286,51 @@
                     {activeTab === 'report' && gameMetrics && (
                       <div className="space-y-4 animate-in fade-in">
                         
-                        {/* Header */}
                         <div className={`flex justify-between items-center px-4 py-2 ${t.panelInner} rounded-xl border ${t.border}`}>
                           <div className="text-xs font-bold flex flex-col"><span className={t.text}>{fullGame.header().White || 'White'}</span><span className={`${t.textMuted} font-normal`}>White</span></div>
-                          <div className={`text-[10px] ${t.textMuted} bg-black/10 dark:bg-white/10 px-2 py-1 rounded-full uppercase font-bold`}>VS</div>
+                          <div className={`text-[10px] ${t.textMuted} bg-black/10 dark:bg-white/10 px-2 py-1 rounded-md uppercase font-bold`}>VS</div>
                           <div className="text-xs font-bold flex flex-col items-end"><span className={t.text}>{fullGame.header().Black || 'Black'}</span><span className={`${t.textMuted} font-normal`}>Black</span></div>
                         </div>
 
-                        {/* Progress Bars for Accuracy & Rating */}
                         <div className="flex flex-col gap-3">
-                           {/* Accuracy */}
-                           <div className={`p-5 rounded-xl border ${t.border} ${t.panelInner} shadow-lg`}>
+                           <div className={`p-5 rounded-xl border ${t.border} ${t.panelInner} shadow-sm`}>
                               <div className="flex items-center justify-center gap-2 mb-4">
                                  <Target size={16} className={t.accentText}/> 
                                  <span className={`text-xs uppercase font-bold tracking-widest ${t.textMuted}`}>Accuracy</span>
                               </div>
                               <div className="flex gap-8">
-                                 <ProgressBar label={fullGame.header().White || 'White'} value={gameMetrics.white.accuracy} isWhite={true} />
-                                 <ProgressBar label={fullGame.header().Black || 'Black'} value={gameMetrics.black.accuracy} isWhite={false} />
+                                 <ProgressBar label={fullGame.header().White || 'White'} value={gameMetrics.white.accuracy} isWhite={true} t={t} />
+                                 <ProgressBar label={fullGame.header().Black || 'Black'} value={gameMetrics.black.accuracy} isWhite={false} t={t} />
                               </div>
                            </div>
                            
-                           {/* Est Rating */}
-                           <div className={`p-5 rounded-xl border ${t.border} ${t.panelInner} shadow-lg`}>
+                           <div className={`p-5 rounded-xl border ${t.border} ${t.panelInner} shadow-sm`}>
                               <div className="flex items-center justify-center gap-2 mb-4">
                                  <Activity size={16} className={t.accentText}/> 
                                  <span className={`text-xs uppercase font-bold tracking-widest ${t.textMuted}`}>Est. Rating</span>
                               </div>
                               <div className="flex gap-8">
-                                 <ProgressBar label={fullGame.header().White || 'White'} value={gameMetrics.white.estimated} max={3000} isWhite={true} />
-                                 <ProgressBar label={fullGame.header().Black || 'Black'} value={gameMetrics.black.estimated} max={3000} isWhite={false} />
+                                 <ProgressBar label={fullGame.header().White || 'White'} value={gameMetrics.white.estimated} max={3000} isWhite={true} t={t} />
+                                 <ProgressBar label={fullGame.header().Black || 'Black'} value={gameMetrics.black.estimated} max={3000} isWhite={false} t={t} />
                               </div>
                            </div>
                         </div>
 
-                        <LiveEvalGraph />
+                        <LiveEvalGraph evalCurve={evalCurve} history={history} currentMoveIndex={currentMoveIndex} goToMove={goToMove} t={t} />
 
-                        {/* Real User Performance Metrics */}
                         <div className="flex gap-4">
-                          <div className={`flex-1 ${t.panelInner} p-4 rounded-xl border ${t.border} flex flex-col justify-center items-center text-center shadow-lg hover:bg-white/5 transition-colors`}>
-                            <Flame size={20} className="text-[#81b64c] mb-2 drop-shadow-[0_0_8px_rgba(129,182,76,0.8)]" />
+                          <div className={`flex-1 ${t.panelInner} p-4 rounded-xl border ${t.border} flex flex-col justify-center items-center text-center shadow-sm hover:bg-white/5 transition-colors`}>
+                            <Flame size={20} className="text-[#81b64c] mb-2 drop-shadow-sm" />
                             <span className={`text-[10px] uppercase font-bold ${t.textMuted} tracking-wider`}>Your Top Moves</span>
                             <span className={`text-2xl font-black ${t.text} mt-1`}>{gameMetrics.userTopMoves}</span>
                           </div>
-                          <div className={`flex-1 ${t.panelInner} p-4 rounded-xl border ${t.border} flex flex-col justify-center items-center text-center shadow-lg hover:bg-white/5 transition-colors`}>
-                            <XCircle size={20} className="text-[#ca3431] mb-2 drop-shadow-[0_0_8px_rgba(202,52,49,0.8)]" />
+                          <div className={`flex-1 ${t.panelInner} p-4 rounded-xl border ${t.border} flex flex-col justify-center items-center text-center shadow-sm hover:bg-white/5 transition-colors`}>
+                            <XCircle size={20} className="text-[#ca3431] mb-2 drop-shadow-sm" />
                             <span className={`text-[10px] uppercase font-bold ${t.textMuted} tracking-wider`}>Your Mistakes</span>
                             <span className={`text-2xl font-black ${t.text} mt-1`}>{gameMetrics.userMistakes}</span>
                           </div>
                         </div>
 
-                        {/* Meme Good/Bad Tables */}
                         <div className="flex flex-col xl:flex-row gap-4 mt-4">
                           <div className={`flex-1 ${t.panelInner} rounded-xl p-3 border ${t.border}`}>
                             <div className={`flex justify-between items-center mb-3 border-b ${t.border} pb-2`}>
@@ -1639,26 +2365,23 @@
                           </div>
                         </div>
 
-                        {/* Move List Section */}
                         <div className={`p-4 rounded-xl border ${t.border} ${t.panelInner}`}>
                           <div className="flex justify-between items-center mb-3">
                              <h4 className={`text-xs font-black uppercase ${t.textMuted}`}>Game Moves</h4>
                              <button onClick={() => setMovesExpanded(!movesExpanded)} className={`flex items-center gap-1 text-[10px] ${t.accentText} uppercase font-bold hover:brightness-125 transition-all`}>
-                               {movesExpanded ? <Minimize2 size={12} /> : <Maximize2 size={12} />}
-                               {movesExpanded ? 'Show Less' : 'Show All'}
+                               {movesExpanded ? <Minimize2 size={12} /> : <Maximize2 size={12} />} {movesExpanded ? 'Show Less' : 'Show All'}
                              </button>
                           </div>
                           <div className="flex flex-wrap gap-1.5 mt-2">
                             {mainLine.slice(0, movesExpanded ? mainLine.length : 10).map((m, i) => (
                                <div 
-                                 key={i} 
-                                 onClick={() => goToMove(i)} 
-                                 className={`cursor-pointer flex items-center gap-1 text-[11px] px-2 py-1.5 rounded-lg border ${currentMoveIndex === i ? `bg-[${t.accentText.split('-')[1]}]/20 border-[${t.accentText.split('-')[1]}]` : `bg-black/20 dark:bg-white/5 border-white/5`} hover:border-gray-400 transition-colors shadow-sm`}
+                                 key={i} onClick={() => goToMove(i)} 
+                                 className={`cursor-pointer flex items-center gap-1 text-[11px] px-2 py-1.5 rounded-lg border ${currentMoveIndex === i ? `bg-[${t.accentText.split('-')[1]}]/20 border-[${t.accentText.split('-')[1]}]` : `bg-black/5 dark:bg-white/5 border-black/5 dark:border-white/5`} hover:border-gray-400 transition-colors shadow-sm`}
                                >
                                   <span className={t.textMuted}>{m.color==='w' ? `${Math.floor(i/2)+1}.` : ''}</span>
-                                  <span className={`${t.text} font-bold`}>{m.san}</span>
+                                  <span className={`${t.text} font-bold`}>{formatSan(m.san)}</span>
                                   {m.quality && m.quality.id !== 'ok' && m.quality.id !== 'theoretical' && (
-                                    <span style={{color: m.quality.color}} className="font-black text-[10px] ml-0.5">{m.quality.icon}</span>
+                                    <span style={{color: m.quality.color}} className="font-black text-[10px] ml-0.5 tracking-tighter">{m.quality.icon}</span>
                                   )}
                                </div>
                             ))}
@@ -1674,7 +2397,11 @@
                           <div className="flex items-center justify-between z-10 relative mb-1">
                              <div className="flex items-center gap-4">
                                <span className={`text-4xl font-mono font-black ${t.text} ${analyzing ? 'opacity-90' : ''}`}>
-                                 {evaluation > 0 ? `+${Number(evaluation).toFixed(2)}` : Number(evaluation).toFixed(2)}
+                                 {deepAnalyzing ? (
+                                   <span className="flex items-center gap-2 text-2xl text-cyan-500 animate-pulse"><Loader2 size={24} className="animate-spin" /> Eval...</span>
+                                 ) : (
+                                   evaluation > 0 ? `+${Number(evaluation).toFixed(2)}` : Number(evaluation).toFixed(2)
+                                 )}
                                </span>
                              </div>
                              <div className="flex flex-col items-end text-right">
@@ -1683,23 +2410,15 @@
                              </div>
                           </div>
                           
-                          {/* Animated Dots Loading Bar at the bottom */}
                           {analyzing && (
                             <div 
                               className="absolute bottom-1.5 left-0 right-0 w-full flex justify-center items-center gap-[6px]" 
-                              style={{ 
-                                maskImage: 'linear-gradient(to right, transparent, black 5%, black 95%, transparent)', 
-                                WebkitMaskImage: 'linear-gradient(to right, transparent, black 5%, black 95%, transparent)' 
-                              }}
+                              style={{ maskImage: 'linear-gradient(to right, transparent, black 5%, black 95%, transparent)', WebkitMaskImage: 'linear-gradient(to right, transparent, black 5%, black 95%, transparent)' }}
                             >
                                {[0, 1, 2, 3, 4, 5].map(i => (
                                  <div 
-                                   key={i}
-                                   className="w-1.5 h-1.5 rounded-full animate-smart-slide"
-                                   style={{
-                                     backgroundColor: appTheme === 'neon' ? '#06b6d4' : '#f3ae16',
-                                     animationDelay: `${i * 0.12}s`
-                                   }}
+                                   key={i} className="w-1.5 h-1.5 rounded-full animate-smart-slide"
+                                   style={{ backgroundColor: appTheme === 'neon' ? '#06b6d4' : '#f3ae16', animationDelay: `${i * 0.12}s` }}
                                  />
                                ))}
                             </div>
@@ -1710,18 +2429,21 @@
                           <h4 className={`text-xs font-black uppercase mb-4 flex items-center gap-2 ${t.textMuted}`}>
                             <Activity size={14} /> Engine Top Lines
                           </h4>
-                          {engineLines.filter(Boolean).length > 0 ? (
+                          {deepAnalyzing ? (
+                            <div className={`flex flex-col items-center justify-center py-6 gap-3 ${t.textMuted} text-xs font-medium uppercase tracking-widest animate-pulse`}>
+                               <Brain size={24} className="text-cyan-500 opacity-50" /> Processing Variation...
+                            </div>
+                          ) : engineLines.filter(Boolean).length > 0 ? (
                             <div className="space-y-2">
                               {engineLines.filter(Boolean).map((line, i) => (
                                 <div 
-                                  key={i} 
-                                  onClick={() => playEngineMove(line.move)}
+                                  key={i} onClick={() => playEngineMove(line.move)}
                                   className={`flex items-center gap-4 p-2 rounded-lg cursor-pointer hover:bg-black/5 dark:hover:bg-white/10 transition-colors group ${i===0 ? `border ${t.border} ${t.panel}` : ''}`}
                                 >
                                   <span className={`w-12 text-center font-mono text-xs font-bold ${Number(line.eval) >= 0 ? 'text-green-500' : 'text-red-500'}`}>
                                     {Number(line.eval) > 0 ? `+${Number(line.eval).toFixed(2)}` : Number(line.eval).toFixed(2)}
                                   </span>
-                                  <span className={`font-bold text-sm ${t.text} group-hover:${t.accentText} transition-colors`}>{line.move}</span>
+                                  <span className={`font-bold text-sm flex items-center gap-1 ${t.text} group-hover:${t.accentText} transition-colors`}>{formatSan(line.move)}</span>
                                   {i===0 && <span className={`text-[9px] uppercase font-black px-2 py-0.5 rounded ${t.accent} ${appTheme==='neon'?'text-black':'text-white'} ml-auto`}>Best</span>}
                                 </div>
                               ))}
@@ -1737,7 +2459,6 @@
                       </div>
                     )}
 
-                    {/* --- TAB: DETAILS --- */}
                     {activeTab === 'details' && (
                       <div className="space-y-4 animate-in fade-in duration-300">
                          <div className={`p-4 rounded-xl border ${t.border} ${t.panelInner} space-y-3`}>
@@ -1758,10 +2479,7 @@
                     )}
                   </div>
 
-                  {/* Panel Sticky Footer: Media Controls */}
-                  <div className={`p-4 border-t ${t.border} ${t.panelInner} shrink-0 z-20 shadow-[0_-10px_20px_rgba(0,0,0,0.05)] flex flex-col`}>
-                    
-                    {/* Return to Game Line Button (only visible when in an analysis branch) */}
+                  <div className={`p-3 lg:p-4 border-t ${t.border} ${t.panelInner} shrink-0 shadow-[0_-10px_20px_rgba(0,0,0,0.05)]`}>
                     {branchStartIndex !== -1 && (
                       <button 
                         onClick={returnToMainLine} 
@@ -1785,10 +2503,9 @@
                         <ChevronsRight size={22} strokeWidth={3} />
                       </button>
                       
-                      {/* Vertical Menu Icon changed to Flip Board feature */}
                       <button 
                         onClick={() => setIsFlipped(!isFlipped)} 
-                        className={`w-12 md:w-14 py-3 md:py-4 rounded-xl flex justify-center items-center bg-black/10 dark:bg-white/10 ${t.text} hover:bg-black/20 dark:hover:bg-white/20 active:scale-95 transition-all shadow-md`}
+                        className={`w-12 md:w-14 py-3 md:py-4 rounded-xl flex justify-center items-center bg-black/5 dark:bg-white/10 ${t.text} hover:bg-black/10 dark:hover:bg-white/20 active:scale-95 transition-all shadow-md`}
                         title="Flip Board"
                       >
                         <ArrowUpDown size={20} strokeWidth={2.5} />
@@ -1801,8 +2518,7 @@
             ) : null}
           </div>
           
-          {/* Custom Footer */}
-          <footer className={`w-full py-6 mt-auto text-center ${t.textMuted} flex flex-col items-center justify-center z-50 relative border-t ${t.border}`}>
+          <footer className={`w-full py-6 mt-auto text-center ${t.textMuted} flex flex-col items-center justify-center z-40 relative border-t ${t.border}`}>
             <div className="flex items-center gap-1.5 text-sm font-medium">
               Made with <Heart size={16} className="text-red-500 fill-red-500 animate-pulse drop-shadow-[0_0_10px_rgba(239,68,68,0.8)] mx-0.5" /> by
               <a href="https://github.com/Rush1patel" target="_blank" rel="noopener noreferrer" className={`flex items-center gap-1.5 ml-1 ${t.text} hover:${t.accentText} transition-colors font-bold group`}>
