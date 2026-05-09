@@ -59,20 +59,67 @@
     /* Hyper-smooth piece and eval animations */
     .piece-animate { transition: left 0.15s ease-out, top 0.15s ease-out, transform 0.1s ease-out; }
     .piece-drag { transition: none !important; z-index: 50; }
-    .eval-animate { transition: height 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+    .eval-animate { transition: height 0.15s ease-out; } /* Ultra-fast 60fps response */
 
-    /* Custom Bouncing Maze Loader */
-    .game-loader {
-      width: 70px; height: 40px; outline: 2px solid var(--track-color);
-      background:
-        radial-gradient(farthest-side, var(--ball1) 90%, #0000) 0 0/8px 8px no-repeat,
-        radial-gradient(farthest-side, var(--ball2) 90%, #0000) 0 0/8px 8px no-repeat,
-        linear-gradient(var(--track-color) 0 0) 50%/10px 100% no-repeat,
-        conic-gradient(from  90deg at 10px 10px, #0000 90deg, var(--track-bg) 0),
-        conic-gradient(from -90deg at 60px 30px, #0000 90deg, var(--track-bg) 0);
-      animation: gameLoaderAnim 2s infinite; box-shadow: 0 0 25px var(--glow-color); transform: scale(1.6);
+    /* Custom Loading Bar for Deep Analysis */
+    .theme-loader-bar {
+      width: 150px;
+      height: 24px;
+      border-radius: 20px;
+      color: var(--accent-color);
+      border: 2px solid;
+      position: relative;
+      margin: 0 auto;
     }
-    @keyframes gameLoaderAnim {
+    .theme-loader-bar::before {
+      content: "";
+      position: absolute;
+      margin: 2px;
+      inset: 0 100% 0 0;
+      border-radius: inherit;
+      background: currentColor;
+      animation: fill-bar-forward 4.5s linear forwards;
+    }
+    @keyframes fill-bar-forward {
+        100% { inset: 0 0 0 0; }
+    }
+
+    /* Simple round piece badge spinner */
+    .piece-loader {
+      width: 13px; height: 13px;
+      border: 2px solid rgba(255,255,255,0.3);
+      border-top-color: #fff;
+      border-radius: 50%;
+      display: inline-block;
+      box-sizing: border-box;
+      animation: pieceRotation 0.65s linear infinite;
+    }
+    @keyframes pieceRotation { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+    /* Chess-themed loader for DeepGameLoader */
+    .chess-loader {
+      width: 70px; height: 40px;
+      outline: 2px solid #fff;
+      background:
+        radial-gradient(farthest-side,red 90%,#0000) 0 0/8px 8px no-repeat,
+        radial-gradient(farthest-side,#000 90%,#0000) 0 0/8px 8px no-repeat,
+        linear-gradient(#fff 0 0) 50%/10px 100% no-repeat,
+        conic-gradient(from  90deg at 10px 10px,#0000 90deg,#fff 0),
+        conic-gradient(from -90deg at 60px 30px,#0000 90deg,#fff 0);
+      animation: l9 2s infinite;
+    }
+    .chess-loader-neon {
+      width: 70px; height: 40px;
+      outline: 2px solid #06b6d4;
+      background:
+        radial-gradient(farthest-side,#f59e0b 90%,#0000) 0 0/8px 8px no-repeat,
+        radial-gradient(farthest-side,#a855f7 90%,#0000) 0 0/8px 8px no-repeat,
+        linear-gradient(#06b6d4 0 0) 50%/10px 100% no-repeat,
+        conic-gradient(from  90deg at 10px 10px,#0000 90deg,#06b6d4 0),
+        conic-gradient(from -90deg at 60px 30px,#0000 90deg,#06b6d4 0);
+      animation: l9 2s infinite;
+    }
+    @keyframes l9 {
       0%    {background-position:50%  100%,0    0   ,50%}
       12.5% {background-position:0    100%,50%  0   ,50%}
       25%   {background-position:0    0   ,50%  100%,50%}
@@ -83,41 +130,134 @@
       82.5% {background-position:50%  0   ,0    100%,50%}
       100%  {background-position:50%  100%,0    0   ,50%}
     }
+    /* Shimmer text */
+    @keyframes shimmer { 0%{background-position:-400px 0} 100%{background-position:400px 0} }
+    .shimmer-text {
+      background: linear-gradient(90deg, rgba(255,255,255,0.35) 25%, rgba(255,255,255,0.95) 50%, rgba(255,255,255,0.35) 75%);
+      background-size: 400px 100%; -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      animation: shimmer 2.2s infinite linear;
+    }
+    .shimmer-text-green {
+      background: linear-gradient(90deg, #4a8a28 25%, #a8e063 50%, #4a8a28 75%);
+      background-size: 400px 100%; -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      animation: shimmer 2.2s infinite linear;
+    }
+    .shimmer-text-cyan {
+      background: linear-gradient(90deg, #0891b2 25%, #67e8f9 50%, #0891b2 75%);
+      background-size: 400px 100%; -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      animation: shimmer 2.2s infinite linear;
+    }
 
-    .theme-loader-bar {
-      width: 140px;
-      height: 14px;
-      border-radius: 20px;
-      border: 2px solid var(--accent-color);
+    /* ===== Lightsaber Fight Loader ===== */
+    #ls-loader {
+      width: 80px;
+      height: 40px;
       position: relative;
-      overflow: hidden;
       margin: 0 auto;
     }
-    .theme-loader-bar::before {
-      content: "";
+    .lightsaber {
       position: absolute;
-      margin: 2px;
-      inset: 0 100% 0 0;
-      border-radius: inherit;
-      background: var(--accent-color);
-      animation: fill-bar-forward 4.5s linear forwards;
+      width: 4px;
+      height: 12px;
+      background-color: #888;
+      border-radius: 1px;
+      bottom: 0;
     }
-    @keyframes fill-bar-forward {
-        100% { inset: 0 0 0 0; }
+    .lightsaber.ls-left  { left: 0; }
+    .lightsaber.ls-right { right: 0; }
+    .lightsaber::before {
+      position: absolute; content: ' '; display: block;
+      width: 2px; height: 25px; max-height: 1px;
+      left: 1px; top: 1px;
+      background-color: #fff;
+      border-radius: 1px;
+      transform: rotateZ(180deg);
+      transform-origin: center top;
     }
+    .lightsaber::after {
+      position: absolute; content: ' '; display: block;
+      width: 2px; height: 2px;
+      left: 1px; top: 4px;
+      background-color: #fff;
+      border-radius: 50%;
+    }
+    .ls-particles {
+      position: absolute;
+      left: 42px; top: 10px;
+      width: 1px; height: 5px;
+      background-color: rgba(255,255,255,0);
+      transform: rotateZ(0deg);
+    }
+    .lightsaber.ls-green::before { animation: showlightgreen 2s ease-in-out infinite 1s; }
+    .lightsaber.ls-red::before   { animation: showlightred  2s ease-in-out infinite 1s; }
+    .lightsaber.ls-left          { animation: fightleft  2s ease-in-out infinite 1s; }
+    .lightsaber.ls-right         { animation: fightright 2s ease-in-out infinite 1s; }
+    .ls-particles.ls-part-1 { animation: particles1 2s ease-out infinite 1s; }
+    .ls-particles.ls-part-2 { animation: particles2 2s ease-out infinite 1s; }
+    .ls-particles.ls-part-3 { animation: particles3 2s ease-out infinite 1s; }
+    .ls-particles.ls-part-4 { animation: particles4 2s ease-out infinite 1s; }
+    .ls-particles.ls-part-5 { animation: particles5 2s ease-out infinite 1s; }
 
-    /* Custom Piece Evaluation Target Loader */
-    .piece-loader {
-      width: 16px; height: 16px; border: 2.5px dotted var(--p-color1); border-style: solid solid dotted dotted;
-      border-radius: 50%; display: inline-block; position: relative; box-sizing: border-box; animation: pieceRotation 2s linear infinite;
+    @keyframes showlightgreen {
+      0%   { max-height:0;    box-shadow:0 0 0  0  #87c054; }
+      5%   {                  box-shadow:0 0 4px 2px #87c054; }
+      10%  { max-height:22px; }
+      80%  { max-height:22px; }
+      85%  {                  box-shadow:0 0 4px 2px #87c054; }
+      100% { max-height:0;    box-shadow:0 0 0  0  #87c054; }
     }
-    .piece-loader::after {
-      content: ''; box-sizing: border-box; position: absolute; left: 0; right: 0; top: 0; bottom: 0; margin: auto;
-      border: 2px dotted var(--p-color2); border-style: solid solid dotted; width: 8px; height: 8px; border-radius: 50%;
-      animation: pieceRotationBack 1s linear infinite; transform-origin: center center;
+    @keyframes showlightred {
+      0%   { max-height:0;    box-shadow:0 0 0  0  #f06363; }
+      20%  {                  box-shadow:0 0 4px 2px #f06363; }
+      25%  { max-height:22px; }
+      80%  { max-height:22px; }
+      85%  {                  box-shadow:0 0 4px 2px #f06363; }
+      100% { max-height:0;    box-shadow:0 0 0  0  #f06363; }
     }
-    @keyframes pieceRotation { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } } 
-    @keyframes pieceRotationBack { 0% { transform: rotate(0deg); } 100% { transform: rotate(-360deg); } }
+    @keyframes fightleft {
+      0%   { transform:rotateZ(0deg);   left:0;    bottom:0; }
+      30%  { transform:rotateZ(0deg);              bottom:0; }
+      40%  { transform:rotateZ(45deg);  left:0;    bottom:2px; }
+      45%  { transform:rotateZ(65deg);  left:0; }
+      65%  { transform:rotateZ(410deg); left:30px; bottom:10px; }
+      95%  { transform:rotateZ(410deg); left:0;    bottom:0; }
+      100% { transform:rotateZ(360deg); left:0;    bottom:0; }
+    }
+    @keyframes fightright {
+      0%   { transform:rotateZ(0deg);    right:0;    bottom:0; }
+      30%  { transform:rotateZ(0deg);                bottom:0; }
+      45%  { transform:rotateZ(-45deg);  right:0;    bottom:2px; }
+      50%  { transform:rotateZ(-65deg);  right:0; }
+      68%  { transform:rotateZ(-410deg); right:27px; bottom:13px; }
+      95%  { transform:rotateZ(-410deg); right:0;    bottom:0; }
+      100% { transform:rotateZ(-360deg); right:0;    bottom:0; }
+    }
+    @keyframes particles1 {
+      0%,63% { background-color:rgba(255,255,255,0); transform:rotateZ(35deg)  translateY(0px); }
+      64%    { background-color:rgba(255,255,255,1); transform:rotateZ(35deg)  translateY(0px); }
+      100%   { background-color:rgba(255,255,255,0); transform:rotateZ(35deg)  translateY(-30px); }
+    }
+    @keyframes particles2 {
+      0%,63% { background-color:rgba(255,255,255,0); transform:rotateZ(-65deg) translateY(0px); }
+      64%    { background-color:rgba(255,255,255,1); transform:rotateZ(-65deg) translateY(0px); }
+      95%,100%{ background-color:rgba(255,255,255,0); transform:rotateZ(-65deg) translateY(-40px); }
+    }
+    @keyframes particles3 {
+      0%,63% { background-color:rgba(255,255,255,0); transform:rotateZ(-75deg) translateY(0px); }
+      64%    { background-color:rgba(255,255,255,1); transform:rotateZ(-75deg) translateY(0px); }
+      97%,100%{ background-color:rgba(255,255,255,0); transform:rotateZ(-75deg) translateY(-35px); }
+    }
+    @keyframes particles4 {
+      0%,63% { background-color:rgba(255,255,255,0); transform:rotateZ(-25deg) translateY(0px); }
+      64%    { background-color:rgba(255,255,255,1); transform:rotateZ(-25deg) translateY(0px); }
+      97%,100%{ background-color:rgba(255,255,255,0); transform:rotateZ(-25deg) translateY(-30px); }
+    }
+    @keyframes particles5 {
+      0%,63% { background-color:rgba(255,255,255,0); transform:rotateZ(65deg)  translateY(0px); }
+      64%    { background-color:rgba(255,255,255,1); transform:rotateZ(65deg)  translateY(0px); }
+      97%,100%{ background-color:rgba(255,255,255,0); transform:rotateZ(65deg)  translateY(-35px); }
+    }
+    /* ===== End Lightsaber Loader ===== */
 
     /* Custom Slider Range styling */
     input[type=range] { -webkit-appearance: none; width: 100%; background: transparent; }
@@ -238,7 +378,7 @@
     const getBotElo = (level) => Math.floor(600 + (level * 173.3)); // L1=773, L15=3200
     const getBotSkillLevel = (level) => Math.floor((level - 1) * (20 / 14)); // Maps 1-15 to 0-20
 
-    // Component Extractions to prevent React unmounting issues
+    // Component Extractions
     const ProgressBar = ({ label, value, max=100, isWhite=true, t }) => {
        const pct = Math.min(100, Math.max(0, (value/max)*100));
        const colorClass = isWhite ? 'bg-white text-black' : 'bg-[#222] text-[#e3e3e3] border border-[#444]';
@@ -294,17 +434,17 @@
       );
     };
 
-    const formatSan = (san) => {
+    const formatSan = (san, color) => {
         if (!san) return null;
-        let symbol = '♙';
+        let symbol = color==='w'?'♙':'♟';
         let displaySan = san;
         
-        if (san.startsWith('N')) { symbol = '♘'; displaySan = san.substring(1); }
-        else if (san.startsWith('B')) { symbol = '♗'; displaySan = san.substring(1); }
-        else if (san.startsWith('R')) { symbol = '♖'; displaySan = san.substring(1); }
-        else if (san.startsWith('Q')) { symbol = '♕'; displaySan = san.substring(1); }
-        else if (san.startsWith('K')) { symbol = '♔'; displaySan = san.substring(1); }
-        else if (san === 'O-O' || san === 'O-O-O') { symbol = '♔'; displaySan = san; }
+        if (san.startsWith('N')) { symbol = color==='w'?'♘':'♞'; displaySan = san.substring(1); }
+        else if (san.startsWith('B')) { symbol = color==='w'?'♗':'♝'; displaySan = san.substring(1); }
+        else if (san.startsWith('R')) { symbol = color==='w'?'♖':'♜'; displaySan = san.substring(1); }
+        else if (san.startsWith('Q')) { symbol = color==='w'?'♕':'♛'; displaySan = san.substring(1); }
+        else if (san.startsWith('K')) { symbol = color==='w'?'♔':'♚'; displaySan = san.substring(1); }
+        else if (san === 'O-O' || san === 'O-O-O') { symbol = color==='w'?'♔':'♚'; displaySan = san; }
 
         return (
             <span className="flex items-center gap-[1px]">
@@ -441,50 +581,125 @@
       );
     };
 
-    const DeepGameLoader = ({ appTheme }) => {
-      const texts = [
-        "Intercepting PGN Stream...", 
-        "Validating Game Signatures...",
-        "Calibrating Neural Weights...", 
-        "Applying Stockfish Heuristics...",
-        "Building Analysis Tree...",
-        "Finalizing Assessment..."
+    const DeepGameLoader = ({ appTheme, enginePreset }) => {
+      const PRESET_DURATIONS = { 1: 1200, 2: 2000, 3: 3200, 4: 5000, 5: 7500 };
+      const totalMs = PRESET_DURATIONS[enginePreset] || 2000;
+      const PRESET_LABELS = { 1: 'Blitz', 2: 'Fast', 3: 'Balanced', 4: 'Deep', 5: 'Master' };
+
+      const phases = [
+        { pct: 0,   text: "Intercepting PGN stream..." },
+        { pct: 15,  text: "Validating move signatures..." },
+        { pct: 30,  text: "Loading Stockfish engine..." },
+        { pct: 48,  text: "Calibrating neural weights..." },
+        { pct: 62,  text: "Applying heuristic analysis..." },
+        { pct: 76,  text: "Building evaluation tree..." },
+        { pct: 88,  text: "Finalizing assessment..." },
+        { pct: 97,  text: "Almost ready..." },
       ];
-      const [textIdx, setTextIdx] = useState(0);
-      
+
+      const [progress, setProgress] = useState(0);
+      const [phaseIdx, setPhaseIdx] = useState(0);
+      const startRef = useRef(Date.now());
+
       useEffect(() => {
-         const interval = setInterval(() => {
-            setTextIdx(prev => Math.min(prev + 1, texts.length - 1));
-         }, 350);
-         return () => clearInterval(interval);
-      }, [texts.length]);
+        const tick = () => {
+          const elapsed = Date.now() - startRef.current;
+          const pct = Math.min(99, (elapsed / totalMs) * 100);
+          setProgress(pct);
+          let pi = 0;
+          for (let i = phases.length - 1; i >= 0; i--) {
+            if (pct >= phases[i].pct) { pi = i; break; }
+          }
+          setPhaseIdx(pi);
+          if (pct < 99) requestAnimationFrame(tick);
+        };
+        const raf = requestAnimationFrame(tick);
+        return () => cancelAnimationFrame(raf);
+      }, [totalMs]);
 
-      const loaderStyle = {
-        '--ball1': appTheme === 'neon' ? '#06b6d4' : '#81b64c', 
-        '--ball2': appTheme === 'neon' ? '#8b5cf6' : '#ca3431', 
-        '--track-bg': appTheme === 'light' ? '#f8fafc' : '#111', 
-        '--track-color': appTheme === 'light' ? '#94a3b8' : '#333', 
-        '--glow-color': appTheme === 'neon' ? 'rgba(6,182,212,0.5)' : (appTheme === 'light' ? 'rgba(0,0,0,0.1)' : 'rgba(129,182,76,0.3)'),
-      };
+      const isLight = appTheme === 'light';
+      const isNeon  = appTheme === 'neon';
 
-      const overlayClass = appTheme === 'light' 
-        ? "bg-white/80 backdrop-blur-md text-gray-900" 
-        : "bg-black/80 backdrop-blur-md text-white";
+      const accentColor  = isNeon ? '#06b6d4' : '#81b64c';
+      const shimmerClass = isNeon ? 'shimmer-text-cyan' : isLight ? 'shimmer-text-green' : 'shimmer-text';
+
+      // Frosted glass — blurs content but shows layout silhouette
+      // Enough opacity to blur content into unreadable silhouette, but layout still visible
+      const overlayBg = isLight
+        ? 'rgba(230, 240, 228, 0.82)'
+        : isNeon
+          ? 'rgba(4, 5, 12, 0.85)'
+          : 'rgba(6, 6, 6, 0.86)';
+
+      const pillClass = isLight
+        ? 'bg-black/8 text-gray-700 border-black/12'
+        : isNeon
+          ? 'bg-cyan-500/10 text-cyan-200 border-cyan-400/30'
+          : 'bg-white/10 text-gray-300 border-white/15';
+
+      const pctColor   = isLight ? '#111827' : isNeon ? '#06b6d4' : '#f3f4f6';
+      const labelColor = isLight ? '#4b5563' : isNeon ? '#67e8f9' : '#9ca3af';
+      const trackBg   = isLight ? 'rgba(0,0,0,0.12)' : 'rgba(255,255,255,0.10)';
+      const fillGrad   = isNeon
+        ? 'linear-gradient(90deg,#0891b2,#06b6d4,#a855f7)'
+        : isLight
+          ? 'linear-gradient(90deg,#3a7a20,#81b64c,#b0df70)'
+          : 'linear-gradient(90deg,#4a8a28,#81b64c,#c0ec80)';
 
       return (
-         <div className={`fixed inset-0 z-[9999] flex flex-col items-center justify-center animate-fade-in ${overlayClass}`}>
-            <div className="relative mb-16 flex justify-center items-center h-20">
-               <div className="game-loader" style={loaderStyle}></div>
+        <div
+          className="fixed inset-0 z-[9999] flex flex-col items-center justify-center animate-fade-in"
+          style={{ background: overlayBg, backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)' }}
+        >
+          {/* Corner brackets */}
+          {[['top-8 left-8','border-t-2 border-l-2 rounded-tl-xl'],['top-8 right-8','border-t-2 border-r-2 rounded-tr-xl'],
+            ['bottom-8 left-8','border-b-2 border-l-2 rounded-bl-xl'],['bottom-8 right-8','border-b-2 border-r-2 rounded-br-xl']].map(([pos,cls],i) => (
+            <div key={i} className={`absolute ${pos} w-14 h-14 ${cls}`} style={{borderColor: accentColor, opacity: 0.28}}/>
+          ))}
+
+          <div className="relative z-10 flex flex-col items-center gap-6 px-8 text-center w-full max-w-xs">
+
+            {/* Title */}
+            <div className="flex flex-col items-center gap-2">
+              <h2 className={`text-4xl font-black tracking-[0.18em] uppercase ${shimmerClass}`}>
+                Deep Analysis
+              </h2>
+              <div className="flex items-center gap-2.5">
+                <div className="w-10 h-px" style={{background: accentColor, opacity: 0.4}}/>
+                <span className="text-[10px] font-bold uppercase tracking-[0.22em]" style={{color: labelColor}}>
+                  {PRESET_LABELS[enginePreset] || 'Fast'} Mode · SF 10.0
+                </span>
+                <div className="w-10 h-px" style={{background: accentColor, opacity: 0.4}}/>
+              </div>
             </div>
-            <h2 className="text-2xl font-black tracking-widest uppercase animate-pulse drop-shadow-md">Deep OS Analysis</h2>
-            <p className={`text-xs mt-4 font-mono tracking-widest px-5 py-2 rounded-full border shadow-lg ${appTheme === 'light' ? 'bg-black/5 text-gray-700 border-black/10' : 'bg-white/10 text-gray-300 border-white/20'}`}>
-              {texts[textIdx]}
+
+            {/* Lightsaber Fight Loader */}
+            <div id="ls-loader">
+              <div className="ls-particles ls-part-1"></div>
+              <div className="ls-particles ls-part-2"></div>
+              <div className="ls-particles ls-part-3"></div>
+              <div className="ls-particles ls-part-4"></div>
+              <div className="ls-particles ls-part-5"></div>
+              <div className="lightsaber ls-left ls-green"></div>
+              <div className="lightsaber ls-right ls-red"></div>
+            </div>
+
+            {/* Phase pill */}
+            <p className={`text-[11px] font-mono tracking-widest px-5 py-2.5 rounded-full border shadow-sm transition-all duration-500 ${pillClass}`}>
+              {phases[phaseIdx].text}
             </p>
-            <div className="theme-loader-bar mt-6" style={{ '--accent-color': appTheme === 'neon' ? '#06b6d4' : '#81b64c' }}></div>
-         </div>
+
+            {/* Big % only */}
+            <div className="flex flex-col items-center w-full">
+              <span className="text-3xl font-black font-mono" style={{color: pctColor, letterSpacing:'0.04em'}}>
+                {Math.round(progress)}<span className="text-lg font-bold" style={{opacity:0.5}}>%</span>
+              </span>
+            </div>
+
+          </div>
+        </div>
       );
     };
-
 
     const App = () => {
       // SETTINGS & THEMES
@@ -496,7 +711,23 @@
       const [pieceSet, setPieceSet] = useState('neo');
       const [showCoords, setShowCoords] = useState(true);
       const [showLegalMoves, setShowLegalMoves] = useState(true);
-      const [targetDepth, setTargetDepth] = useState(14); 
+      // Engine preset levels — Blitz/Fast/Balanced use depth; Deep/Master use movetime for consistent speed
+      const ENGINE_PRESETS = [
+        { id: 1, label: 'Blitz',    sublabel: 'Instant (~0.4s)', depth: 10, movetime: null, debounce: 40,  throttle: 16 },
+        { id: 2, label: 'Fast',     sublabel: 'Quick (~0.8s)',   depth: 13, movetime: null, debounce: 60,  throttle: 25 },
+        { id: 3, label: 'Balanced', sublabel: 'Standard (~1.5s)',depth: 16, movetime: null, debounce: 80,  throttle: 33 },
+        { id: 4, label: 'Deep',     sublabel: 'Precise (~2s)',   depth: null, movetime: 2000, debounce: 80, throttle: 33 },
+        { id: 5, label: 'Master',   sublabel: 'Max (~3s)',       depth: null, movetime: 3000, debounce: 80, throttle: 33 },
+      ];
+      const [enginePreset, setEnginePreset] = useState(2); // default: Fast
+      const enginePresetRef = useRef(ENGINE_PRESETS[1]);
+      useEffect(() => { 
+        enginePresetRef.current = ENGINE_PRESETS.find(p => p.id === enginePreset) || ENGINE_PRESETS[1];
+        targetDepthRef.current = enginePresetRef.current.depth;
+      }, [enginePreset]);
+      const [targetDepth, setTargetDepth] = useState(13); 
+      const targetDepthRef = useRef(13);
+      useEffect(() => { targetDepthRef.current = targetDepth; }, [targetDepth]);
       const [showEvalBar, setShowEvalBar] = useState(true);
       const [showHighlights, setShowHighlights] = useState(true);
       const [blindfoldMode, setBlindfoldMode] = useState(false);
@@ -510,13 +741,15 @@
       const [activeTab, setActiveTab] = useState('report'); 
       const [analyzeMode, setAnalyzeMode] = useState('username'); // 'username' | 'pgn'
       const [username, setUsername] = useState("");
+      const [playerName, setPlayerName] = useState(""); // separate from username — used in Play vs AI
       const [pgnText, setPgnText] = useState("");
       
       const [loading, setLoading] = useState(false);
       const [isGameLoading, setIsGameLoading] = useState(false);
       const [error, setError] = useState("");
       const [games, setGames] = useState([]);
-      const [view, setView] = useState("home"); // home, workspace, play-setup, playing
+      const [gameFilter, setGameFilter] = useState('all'); // 'all' | 'win' | 'loss' | 'draw'
+      const [view, setView] = useState("home"); // home, play-setup, playing, workspace
       const [isFlipped, setIsFlipped] = useState(false);
       
       // WORKSPACE STATE
@@ -554,7 +787,9 @@
 
       // ENGINE & DRAG STATES
       const [selectedSquare, setSelectedSquare] = useState(null);
-      const [dragState, setDragState] = useState(null); 
+      const [dragState, setDragState] = useState(null); // only startSq for drop logic
+      const dragPosRef = useRef({ startX: 0, startY: 0, curX: 0, curY: 0 });
+      const dragElemRef = useRef(null);
       const boardDOMRef = useRef(null);
       const [evaluation, setEvaluation] = useState(0.0);
       const [bestMove, setBestMove] = useState(null);
@@ -569,31 +804,45 @@
       const boardRef = useRef(currentBoard);
       const evalCurveRef = useRef(evalCurve);
       const historyRef = useRef(history);
+      const fenHistoryRef = useRef([]); // Pre-computed FEN at each move index for instant navigation
       
       useEffect(() => { boardRef.current = currentBoard; }, [currentBoard]);
       useEffect(() => { evalCurveRef.current = evalCurve; }, [evalCurve]);
       useEffect(() => { historyRef.current = history; }, [history]);
 
+      // Guards against the feedback loop: quality-update → setHistory → board-effect → re-analysis → repeat
+      const lastAnalyzedFenRef = useRef('');
+      // Debounce handle so rapid navigation doesn't hammer stop/start on the engine
+      const analysisDebounceRef = useRef(null);
+
       // --- Global Keyboard Navigation ---
+      const currentMoveIndexRef = useRef(currentMoveIndex);
+      const historyLengthRef = useRef(history.length);
+      const viewRef = useRef(view);
+      useEffect(() => { currentMoveIndexRef.current = currentMoveIndex; }, [currentMoveIndex]);
+      useEffect(() => { historyLengthRef.current = history.length; }, [history.length]);
+      useEffect(() => { viewRef.current = view; }, [view]);
+
       useEffect(() => {
         const handleKeyDown = (e) => {
-          if (view !== 'workspace') return;
-          if (document.activeElement?.tagName === 'INPUT' || document.activeElement?.tagName === 'TEXTAREA') return;
-
-          if (e.key === 'ArrowLeft') {
-            e.preventDefault(); goToMove(currentMoveIndex - 1);
-          } else if (e.key === 'ArrowRight') {
-            e.preventDefault(); goToMove(currentMoveIndex + 1);
-          } else if (e.key === 'ArrowUp') {
-            e.preventDefault(); goToMove(-1);
-          } else if (e.key === 'ArrowDown') {
-            e.preventDefault(); goToMove(history.length - 1);
+          if (viewRef.current !== 'workspace') return;
+          const tag = document.activeElement?.tagName;
+          if (tag === 'INPUT' || tag === 'TEXTAREA') return;
+          // Blur anything else that might be eating keys (e.g. board divs)
+          if (document.activeElement && tag !== 'BODY') document.activeElement.blur();
+          if (e.key === 'ArrowLeft' || e.key === 'ArrowRight' || e.key === 'ArrowUp' || e.key === 'ArrowDown') {
+            e.preventDefault();
+            e.stopPropagation();
+            if (e.key === 'ArrowLeft')  setCurrentMoveIndex(i => Math.max(-1, i - 1));
+            if (e.key === 'ArrowRight') setCurrentMoveIndex(i => Math.min(historyLengthRef.current - 1, i + 1));
+            if (e.key === 'ArrowUp')    setCurrentMoveIndex(-1);
+            if (e.key === 'ArrowDown')  setCurrentMoveIndex(historyLengthRef.current - 1);
+            setSelectedSquare(null);
           }
         };
-
-        window.addEventListener('keydown', handleKeyDown);
-        return () => window.removeEventListener('keydown', handleKeyDown);
-      }, [currentMoveIndex, history.length, view]);
+        document.addEventListener('keydown', handleKeyDown, true);
+        return () => document.removeEventListener('keydown', handleKeyDown, true);
+      }, []);
 
       // --- Workspace Engine Setup ---
       useEffect(() => {
@@ -625,8 +874,12 @@
               }
 
               if (line.startsWith('bestmove')) {
-                setAnalyzing(false); setEngineDepth(latestDepth);
-                setEngineLines([...latestLines]); setEvaluation(latestEval); setBestMove(latestBestMove);
+                // Final result — set everything at once (React 18 auto-batches these)
+                setAnalyzing(false);
+                setEngineDepth(latestDepth);
+                setEngineLines([...latestLines]);
+                setEvaluation(latestEval);
+                setBestMove(latestBestMove);
                 return;
               }
 
@@ -657,15 +910,19 @@
               }
 
               const now = performance.now();
-              if (updated && (now - lastUpdateTime > 100)) {
-                setEngineDepth(latestDepth); setEngineLines([...latestLines]);
-                setEvaluation(latestEval); setBestMove(latestBestMove);
+              // Throttle based on preset — Blitz=16ms, others=25-33ms
+              if (updated && (now - lastUpdateTime > (enginePresetRef.current?.throttle || 25))) {
+                setEngineDepth(latestDepth);
+                setEngineLines([...latestLines]);
+                setEvaluation(latestEval);
+                setBestMove(latestBestMove);
                 lastUpdateTime = now;
               }
             };
             
             engine.current.postMessage('uci');
-            engine.current.postMessage('setoption name Hash value 32');
+            engine.current.postMessage('setoption name Threads value 4');
+            engine.current.postMessage('setoption name Hash value 512');
             engine.current.postMessage('setoption name MultiPV value 3');
             setEngineStatus("ready");
           } catch (err) {
@@ -693,10 +950,12 @@
                 const moveStr = line.split(' ')[1];
                 if (moveStr && moveStr !== '(none)') {
                    if (hintRequestedRef.current) {
+                      // EXCLUSIVE HINT LOGIC - ONLY show arrow, never apply move.
                       setPlayHint(moveStr);
                       setIsHintLoading(false);
                       hintRequestedRef.current = false;
                    } else {
+                      // BOT MOVE LOGIC - Safe application
                       setPlayBoard(prev => {
                          const newB = new Chess();
                          newB.loadPgn(prev.pgn());
@@ -907,46 +1166,65 @@
          handleAnalyzePgn(finalPgn);
       };
 
-      // --- Live Quality Assignment for Custom Branch Moves ---
+      // --- Live Quality Assignment (runs for every move, not just branches) ---
       useEffect(() => {
         if (currentMoveIndex < 0) return;
         const hist = historyRef.current;
         const move = hist[currentMoveIndex];
+        if (!move) return;
 
-        if (!move || !move.isBranch) return;
-        if (analyzing && engineDepth < targetDepth) return;
+        // Wait until the engine has reached full depth before assigning quality
+        if (analyzing) return;
+        // Don't overwrite opening-book or checkmate labels
+        if (move.quality?.id === 'theoretical' || move.quality?.id === 'sigma') return;
+
+        // evalCurve[N] = eval BEFORE move N (i.e. the eval of the position after move N-1)
+        // evalCurve[N+1] = eval AFTER move N  (the current position — just set by the engine)
+        const evalBefore = evalCurveRef.current[currentMoveIndex];
+        const evalAfter  = evaluation; // always from white's perspective (positive = white winning)
+
+        // Cap extreme values (mate scores) so delta math stays meaningful
+        const capEval = (v) => Math.max(-10, Math.min(10, v));
+        const cappedBefore = capEval(evalBefore ?? 0);
+        const cappedAfter  = capEval(evalAfter);
+
+        // Store this position's real eval so the NEXT move has a correct baseline
+        setEvalCurve(prev => {
+          const next = [...prev];
+          next[currentMoveIndex + 1] = evalAfter;
+          return next;
+        });
+
+        // Can't compute delta without a real "before" eval
+        if (evalBefore === undefined || evalBefore === null) return;
 
         const isWhiteMove = move.color === 'w';
-        const prevEval = evalCurveRef.current[currentMoveIndex] !== undefined ? evalCurveRef.current[currentMoveIndex] : 0.2;
-        const delta = isWhiteMove ? (evaluation - prevEval) : (prevEval - evaluation);
+        // delta > 0  → the moving side improved their position
+        // delta < 0  → the moving side made things worse
+        const delta = isWhiteMove ? (cappedAfter - cappedBefore) : (cappedBefore - cappedAfter);
 
-        let quality = MOVE_TYPES.BEST;
-        if (boardRef.current.isCheckmate()) quality = MOVE_TYPES.SIGMA;
-        else if (delta > 2.0) quality = MOVE_TYPES.AWESOME; 
-        else if (delta >= -0.3) quality = MOVE_TYPES.BEST;
-        else if (delta >= -0.8) quality = MOVE_TYPES.NICE;
-        else if (delta >= -1.5) quality = MOVE_TYPES.OK;
-        else if (delta >= -2.5) quality = MOVE_TYPES.STRANGE;
-        else if (delta >= -4.5) quality = MOVE_TYPES.BAD;
-        else quality = MOVE_TYPES.CLOWN;
+        let quality;
+        if (boardRef.current.isCheckmate())     quality = MOVE_TYPES.SIGMA;   // !! Brilliant (checkmate)
+        else if (delta >= -0.02)                quality = MOVE_TYPES.BEST;    // ★  Best
+        else if (delta >= -0.1)                 quality = MOVE_TYPES.AWESOME; // !  Great
+        else if (delta >= -0.3)                 quality = MOVE_TYPES.NICE;    // ↑  Excellent
+        else if (delta >= -0.6)                 quality = MOVE_TYPES.OK;      // ✓  Good
+        else if (delta >= -1.2)                 quality = MOVE_TYPES.STRANGE; // ?! Inaccuracy
+        else if (delta >= -2.0)                 quality = MOVE_TYPES.BAD;     // ?  Mistake
+        else                                    quality = MOVE_TYPES.CLOWN;   // ?? Blunder
 
         if (move.quality?.id !== quality.id) {
           setHistory(prev => {
             const newHist = [...prev];
             if (newHist[currentMoveIndex]) {
-              newHist[currentMoveIndex] = { ...newHist[currentMoveIndex], quality };
+              newHist[currentMoveIndex] = { ...newHist[currentMoveIndex], quality, _analyzed: true };
             }
             return newHist;
           });
         }
+      }, [evaluation, currentMoveIndex, analyzing]);
 
-        setEvalCurve(prev => {
-          const newCurve = [...prev];
-          newCurve[currentMoveIndex + 1] = evaluation;
-          return newCurve;
-        });
-
-      }, [evaluation, currentMoveIndex, engineDepth, analyzing, targetDepth]);
+      const runAnalysisTimerRef = useRef(null);
 
       const runAnalysis = (fen) => {
         if (engineStatus !== "simulated" && engine.current) {
@@ -954,7 +1232,10 @@
           if (engine.current.clearUIState) engine.current.clearUIState();
         }
         
-        setTimeout(() => {
+        // Cancel any pending go-command from a previous rapid call
+        clearTimeout(runAnalysisTimerRef.current);
+
+        runAnalysisTimerRef.current = setTimeout(() => {
           setEngineLines([]); 
           setAnalyzing(true);
           setEngineDepth(0);
@@ -983,8 +1264,13 @@
           }
 
           engine.current.postMessage(`position fen ${fen}`);
-          engine.current.postMessage('go infinite');
-        }, 10);
+          const preset = enginePresetRef.current;
+          if (preset?.movetime) {
+            engine.current.postMessage(`go movetime ${preset.movetime}`);
+          } else {
+            engine.current.postMessage(`go depth ${preset?.depth || targetDepthRef.current}`);
+          }
+        }, enginePresetRef.current?.debounce || 60);
       };
 
       const animatedPieces = useMemo(() => {
@@ -1044,17 +1330,46 @@
       };
 
       useEffect(() => {
-        const newBoard = new Chess();
-        if (history.length > 0 && currentMoveIndex >= 0) {
-          for (let i = 0; i <= currentMoveIndex; i++) {
+        let newBoard;
+        const fenHistory = fenHistoryRef.current;
+        const fenIdx = currentMoveIndex + 1; // fens[0] = start, fens[1] = after move 0, etc.
+
+        if (fenHistory.length > fenIdx && !history[currentMoveIndex]?.isBranch) {
+          // Fast path: use pre-computed FEN for main-line positions
+          newBoard = new Chess(fenHistory[fenIdx]);
+        } else {
+          // Fallback for branch moves: replay from nearest known FEN
+          const branchStart = history.findIndex(m => m?.isBranch);
+          const safeIdx = branchStart > 0 ? branchStart - 1 : -1;
+          newBoard = new Chess(fenHistory[safeIdx + 1] || undefined);
+          for (let i = safeIdx + 1; i <= currentMoveIndex; i++) {
             const move = history[i];
             if (move && (move.san || move.from)) {
               try { newBoard.move(move.san || move); } catch(e) {}
             }
           }
         }
+
         setCurrentBoard(newBoard);
-        runAnalysis(newBoard.fen());
+
+        const fen = newBoard.fen();
+
+        // ── FEN Guard ──────────────────────────────────────────────────────────
+        // The quality-assignment effect calls setHistory() to assign a badge,
+        // which re-triggers THIS effect with the same position. Without this
+        // check that causes a stop→restart loop ("seizure") every time a badge
+        // is assigned. Only restart the engine when the board position changed.
+        if (fen === lastAnalyzedFenRef.current) return;
+        lastAnalyzedFenRef.current = fen;
+
+        // ── Debounce ──────────────────────────────────────────────────────────
+        // When navigating moves quickly (arrow keys / click spam), don't hammer
+        // stop/start on the engine for every intermediate position. Wait until
+        // the user settles on a square for 120 ms before starting analysis.
+        clearTimeout(analysisDebounceRef.current);
+        analysisDebounceRef.current = setTimeout(() => {
+          runAnalysis(fen);
+        }, enginePresetRef.current?.debounce || 60);
       }, [currentMoveIndex, history]);
 
       const fetchGames = async (targetUsername = username) => {
@@ -1101,16 +1416,13 @@
         const wAcc = Math.min(99, Math.max(50, 40 + (wElo/40) + (Math.random()*5-2)));
         const bAcc = Math.min(99, Math.max(50, 40 + (bElo/40) + (Math.random()*5-2)));
         
-        let currentEval = 0.2;
-        const curve = hist.map(move => {
-          const isWhite = move.color === 'w';
-          const shift = move.quality?.id === 'clown' ? 4 : move.quality?.id === 'bad' ? 2 : move.quality?.id === 'strange' ? 1 : move.quality?.id === 'sigma' ? -3 : 0;
-          currentEval += (isWhite ? -shift : shift);
-          currentEval = Math.max(-8, Math.min(8, currentEval + (Math.random()*0.4 - 0.2)));
-          return currentEval;
-        });
-        setEvalCurve([0.2, ...curve]); 
-        setMainEvalCurve([0.2, ...curve]);
+        // Fill evalCurve with null — real values are written by the quality effect
+        // as Stockfish analyses each position when the user navigates there.
+        // Using fake random values here was the root cause of wrong quality badges.
+        const blankCurve = new Array(totalMoves + 1).fill(null);
+        blankCurve[0] = 0.2; // starting eval
+        setEvalCurve(blankCurve);
+        setMainEvalCurve([...blankCurve]);
 
         const estW = Math.max(100, Math.round(wElo + ((wAcc - 70) * 12)));
         const estB = Math.max(100, Math.round(bElo + ((bAcc - 70) * 12)));
@@ -1118,21 +1430,23 @@
         return {
           white: {
             accuracy: wAcc.toFixed(1), rating: wElo || Math.floor(1200 + Math.random() * 400), estimated: estW,
-            counts: { sigma: 0, awesome: 1, best: Math.floor(totalMoves*0.3), nice: Math.floor(totalMoves*0.2), ok: Math.floor(totalMoves*0.1), theoretical: Math.min(5, Math.floor(totalMoves*0.1)), strange: Math.floor(Math.random()*4), bad: Math.floor(Math.random()*3), clown: Math.floor(Math.random()*2) }
+            counts: { sigma: 0, awesome: 0, best: 0, nice: 0, ok: 0, theoretical: Math.min(8, Math.floor(totalMoves*0.1)), strange: 0, bad: 0, clown: 0 }
           },
           black: {
             accuracy: bAcc.toFixed(1), rating: bElo || Math.floor(1200 + Math.random() * 400), estimated: estB,
-            counts: { sigma: 0, awesome: 1, best: Math.floor(totalMoves*0.28), nice: Math.floor(totalMoves*0.2), ok: Math.floor(totalMoves*0.15), theoretical: Math.min(5, Math.floor(totalMoves*0.1)), strange: Math.floor(Math.random()*5), bad: Math.floor(Math.random()*4), clown: Math.floor(Math.random()*2) }
+            counts: { sigma: 0, awesome: 0, best: 0, nice: 0, ok: 0, theoretical: Math.min(8, Math.floor(totalMoves*0.1)), strange: 0, bad: 0, clown: 0 }
           }
         };
       };
 
       const handleGameClick = (gameObj, overrideTab = 'report') => {
         setIsGameLoading(true);
-        loadGame(gameObj, overrideTab);
+        const PRESET_DURATIONS = { 1: 1200, 2: 2000, 3: 3200, 4: 5000, 5: 7500 };
+        const delay = PRESET_DURATIONS[enginePreset] || 2000;
         setTimeout(() => {
+          loadGame(gameObj, overrideTab);
           setIsGameLoading(false);
-        }, 4500);
+        }, delay);
       };
 
       const loadGame = (gameObj, overrideTab) => {
@@ -1141,15 +1455,14 @@
         const hist = newGame.history({ verbose: true });
         
         const histWithQualities = hist.map((m, i) => {
-          let quality;
-          if (!m.san) return { ...m, quality: MOVE_TYPES.OK };
-          if (i < 8) quality = MOVE_TYPES.THEORETICAL;
-          else if (m.san.includes('#')) quality = MOVE_TYPES.SIGMA;
-          else if (i % 25 === 0) quality = MOVE_TYPES.CLOWN;
-          else if (i % 15 === 0) quality = MOVE_TYPES.STRANGE;
-          else if (i % 18 === 0) quality = MOVE_TYPES.BAD;
-          else quality = MOVE_TYPES.BEST;
-          return { ...m, quality };
+          // Start every move as unanalyzed (shown as OK/neutral badge).
+          // Real quality is assigned by the quality-effect once Stockfish
+          // analyses the position when the user navigates there.
+          let quality = MOVE_TYPES.OK;
+          if (!m.san) quality = MOVE_TYPES.OK;
+          else if (i < 8) quality = MOVE_TYPES.THEORETICAL; // opening book
+          else if (m.san.includes('#')) quality = MOVE_TYPES.SIGMA;  // checkmate
+          return { ...m, quality, _analyzed: false };
         });
 
         let startClock = "10:00"; 
@@ -1182,6 +1495,17 @@
         setHistory(histWithQualities);
         setMainLine(histWithQualities);
         setBranchStartIndex(-1);
+        lastAnalyzedFenRef.current = ''; // Reset so the first position always triggers analysis
+        
+        // Pre-compute FEN at every position for O(1) navigation
+        const fenWalker = new Chess();
+        const fens = [fenWalker.fen()];
+        for (const m of hist) {
+          try { fenWalker.move(m.san || m); } catch(e) {}
+          fens.push(fenWalker.fen());
+        }
+        fenHistoryRef.current = fens;
+
         setCurrentMoveIndex(histWithQualities.length - 1);
         setMovesExpanded(false);
         setGameClocks({ white: wClocks, black: bClocks, start: startClock });
@@ -1228,10 +1552,14 @@
             }
 
             const newHist = history.slice(0, currentMoveIndex + 1);
-            newHist.push({ ...move, quality: MOVE_TYPES.OK, isBranch: true });
+            newHist.push({ ...move, quality: null, isBranch: true });
             
+            // evalCurve[N+1] must hold the real engine eval BEFORE this branch move
+            // so the quality-effect's delta = eval_after - eval_before is accurate.
+            // slice(0, N+2) gives indices 0..N+1; overwrite index N+1 with the current
+            // real engine eval instead of whatever fake value was there.
             const newCurve = evalCurve.slice(0, currentMoveIndex + 2);
-            newCurve.push(evaluation); 
+            newCurve[currentMoveIndex + 1] = evaluation; // real pre-branch eval
             setEvalCurve(newCurve);
             
             setHistory(newHist);
@@ -1247,19 +1575,15 @@
       const handleGridPointerDown = (e, sq) => {
         const board = view === 'playing' ? playBoard : currentBoard;
         const turn = board.turn();
-        
-        setPlayHint(null); 
-
+        setPlayHint(null);
         if (view === 'playing' && (playGameStatus || turn !== playPlayerColor)) return;
-
         const piece = board.get(sq);
-
         if (piece && piece.color === turn) {
           e.preventDefault();
           setSelectedSquare(sq);
-          setDragState({
-            startSq: sq, startX: e.clientX, startY: e.clientY, curX: e.clientX, curY: e.clientY
-          });
+          dragPosRef.current = { startX: e.clientX, startY: e.clientY, curX: e.clientX, curY: e.clientY };
+          setDragState({ startSq: sq });
+          e.currentTarget.setPointerCapture(e.pointerId);
         } else {
           if (selectedSquare) {
             if (view === 'playing') attemptPlayMove(selectedSquare, sq);
@@ -1273,7 +1597,13 @@
       const handleGridPointerMove = (e) => {
         if (dragState) {
           e.preventDefault();
-          setDragState(prev => prev ? { ...prev, curX: e.clientX, curY: e.clientY } : null);
+          dragPosRef.current.curX = e.clientX;
+          dragPosRef.current.curY = e.clientY;
+          if (dragElemRef.current) {
+            const dx = dragPosRef.current.curX - dragPosRef.current.startX;
+            const dy = dragPosRef.current.curY - dragPosRef.current.startY;
+            dragElemRef.current.style.transform = `translate(${dx}px, ${dy}px) scale(1.15)`;
+          }
         }
       };
 
@@ -1285,19 +1615,20 @@
             const y = e.clientY - rect.top;
             const clampedX = Math.max(0, Math.min(x, rect.width - 1));
             const clampedY = Math.max(0, Math.min(y, rect.height - 1));
-            
             const visualC = Math.floor((clampedX / rect.width) * 8);
             const visualR = Math.floor((clampedY / rect.height) * 8);
-            
             const isBoardFlipped = view === 'playing' ? (playPlayerColor === 'b') : isFlipped;
             const c = isBoardFlipped ? 7 - visualC : visualC;
             const r = isBoardFlipped ? 7 - visualR : visualR;
             const targetSq = String.fromCharCode(97 + c) + (8 - r);
-            
             if (dragState.startSq !== targetSq) {
               if (view === 'playing') attemptPlayMove(dragState.startSq, targetSq);
               else attemptMove(dragState.startSq, targetSq);
             }
+          }
+          if (dragElemRef.current) {
+            dragElemRef.current.style.transform = '';
+            dragElemRef.current = null;
           }
           setDragState(null);
         }
@@ -1318,10 +1649,11 @@
             if (branchStartIndex === -1) setBranchStartIndex(currentMoveIndex);
 
             const newHist = history.slice(0, currentMoveIndex + 1);
-            newHist.push({ ...move, quality: MOVE_TYPES.BEST, isBranch: true });
+            newHist.push({ ...move, quality: null, isBranch: true });
             
             const newCurve = evalCurve.slice(0, currentMoveIndex + 2);
-            newCurve.push(evaluation); setEvalCurve(newCurve);
+            newCurve[currentMoveIndex + 1] = evaluation; // real pre-branch eval
+            setEvalCurve(newCurve);
             
             setHistory(newHist);
             setCurrentMoveIndex(currentMoveIndex + 1);
@@ -1391,10 +1723,11 @@
           playMovePairs.push({ w: playHistoryRaw[i], b: playHistoryRaw[i + 1] || null });
       }
 
+      // --- Central UI Assembly ---
       return (
-        <div className={`min-h-screen ${t.bg} font-sans flex flex-col relative overflow-x-hidden transition-colors duration-500`}>
+        <div className={`min-h-screen flex flex-col ${t.bg} font-sans relative overflow-x-hidden transition-colors duration-500`}>
           
-          {isGameLoading && <DeepGameLoader appTheme={appTheme} />}
+          {isGameLoading && <DeepGameLoader appTheme={appTheme} enginePreset={enginePreset} />}
           
           {showSettingsModal && (
             <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/60 backdrop-blur-sm animate-fade-in">
@@ -1407,7 +1740,7 @@
                   <div className="flex">
                      <div className={`w-1/3 flex flex-col border-r ${t.border} ${t.panelInner}`}>
                         <button onClick={()=>setSettingsTab('interface')} className={`p-4 text-left text-sm font-bold flex items-center gap-2 transition-colors ${settingsTab==='interface'?`${t.accent} text-white`:`${t.text} hover:bg-black/5 dark:hover:bg-white/5`}`}><Palette size={16}/> Interface</button>
-                        <button onClick={()=>setSettingsTab('board')} className={`p-4 text-left text-sm font-bold flex items-center gap-2 transition-colors ${settingsTab==='board'?`${t.accent} text-white`:`${t.text} hover:bg-black/5 dark:hover:bg-white/5`}`}><Layout size={16}/> Board & Pieces</button>
+                        <button onClick={()=>setSettingsTab('board')} className={`p-4 text-left text-sm font-bold flex items-center gap-2 transition-colors ${settingsTab==='board'?`${t.accent} text-white`:`${t.text} hover:bg-black/5 dark:hover:bg-white/5`}`}><Layout size={16}/> Board</button>
                      </div>
                      
                      <div className="w-2/3 p-6 max-h-[60vh] overflow-y-auto custom-scrollbar">
@@ -1422,12 +1755,27 @@
                                  </div>
                               </div>
                               <div>
-                                 <div className="flex justify-between items-center mb-2">
-                                    <h4 className={`text-xs font-bold uppercase tracking-widest ${t.textMuted}`}>Eval Target Depth</h4>
-                                    <span className={`text-xs font-black ${t.accentText}`}>Depth {targetDepth}</span>
+                                 <h4 className={`text-xs font-bold uppercase tracking-widest mb-3 ${t.textMuted}`}>Engine Speed & Accuracy</h4>
+                                 <div className="grid grid-cols-1 gap-2">
+                                   {ENGINE_PRESETS.map(preset => (
+                                     <button 
+                                       key={preset.id}
+                                       onClick={() => { setEnginePreset(preset.id); setTargetDepth(preset.depth); }}
+                                       className={`py-3 px-4 rounded-xl border flex items-center justify-between transition-all ${enginePreset === preset.id ? `${t.accent} text-white border-transparent shadow-md` : `${t.border} ${t.text} hover:bg-black/5 dark:hover:bg-white/5`} text-sm font-bold`}
+                                     >
+                                       <span className="flex items-center gap-2">
+                                         {preset.id === 1 && <Zap size={15}/>}
+                                         {preset.id === 2 && <Activity size={15}/>}
+                                         {preset.id === 3 && <Brain size={15}/>}
+                                         {preset.id === 4 && <Target size={15}/>}
+                                         {preset.id === 5 && <Shield size={15}/>}
+                                         {preset.label}
+                                       </span>
+                                       <span className={`text-[10px] font-normal opacity-70`}>{preset.sublabel} · {preset.movetime ? `${preset.movetime/1000}s` : `D${preset.depth}`}</span>
+                                     </button>
+                                   ))}
                                  </div>
-                                 <input type="range" min="10" max="24" value={targetDepth} onChange={(e) => setTargetDepth(parseInt(e.target.value))} style={{'--accent-color': appTheme === 'neon' ? '#06b6d4' : '#81b64c'}} />
-                                 <p className={`text-[10px] mt-2 ${t.textMuted} font-medium`}>Higher depth means better accuracy but takes longer to load evaluations during manual analysis.</p>
+                                 <p className={`text-[10px] mt-2 ${t.textMuted} font-medium`}>Blitz for fast navigation, Master for tournament-level accuracy. Changes take effect on next move.</p>
                               </div>
                               <div className="space-y-2">
                                  <label className={`flex justify-between items-center cursor-pointer p-3 rounded-xl border ${t.border} ${t.panelInner} hover:bg-black/5 dark:hover:bg-white/5 transition-colors`}>
@@ -1533,13 +1881,13 @@
             </div>
           </nav>
           
-          <div className={`flex-1 w-full max-w-[1500px] mx-auto p-4 md:p-6 flex flex-col z-10 ${view === 'workspace' ? 'pb-32 lg:pb-6' : ''}`}>
+          <div className={`flex-1 w-full max-w-[1600px] mx-auto p-4 md:p-6 flex flex-col z-10 ${view === 'workspace' ? 'pb-32 lg:pb-6' : ''}`}>
             
+            {/* ======= HOME VIEW ======= */}
             {view === "home" ? (
               <div className="w-full flex-1 flex flex-col pb-10 animate-in fade-in">
                  {games.length === 0 ? (
                    <div className="flex flex-col items-center justify-center min-h-[85vh] text-center relative z-10 w-full mx-auto mt-4 px-4">
-                     
                      <div className="relative inline-block mb-8 group">
                        <div className={`relative w-28 h-28 md:w-32 md:h-32 rounded-[2.5rem] ${t.panelInner} flex items-center justify-center border ${t.border} shadow-[0_8px_30px_rgba(0,0,0,0.12)] backdrop-blur-2xl transition-transform duration-500 hover:scale-110 hover:rotate-6 cursor-pointer`}>
                          <Shield size={56} className={t.accentText} />
@@ -1554,48 +1902,55 @@
                      </p>
                      
                      <div className="w-full max-w-4xl grid grid-cols-1 md:grid-cols-2 gap-6 mb-12 mx-auto">
-                        
                         {/* Analysis Card */}
                         <div className={`relative flex flex-col p-6 rounded-3xl ${t.panelInner} border ${t.border} shadow-xl hover:-translate-y-1 transition-all duration-300 text-left overflow-hidden group`}>
-                           <div className="absolute right-[-20px] top-[-20px] opacity-5 group-hover:scale-110 group-hover:-rotate-12 transition-transform duration-500 pointer-events-none">
+                           <div className="absolute right-[-20px] top-[-20px] opacity-10 group-hover:scale-110 group-hover:-rotate-12 transition-transform duration-500 pointer-events-none">
                               <CloudLightning size={150} />
                            </div>
-                           <div className="flex items-center gap-3 mb-4 relative z-10">
+                           <div className="flex items-center gap-3 mb-3 relative z-10">
                               <div className={`w-10 h-10 rounded-xl ${t.accent} bg-opacity-20 flex items-center justify-center`}><Search size={20} className={t.accentText}/></div>
                               <h3 className={`text-xl font-black ${t.text}`}>Analyze Game</h3>
                            </div>
                            <p className={`text-sm ${t.textMuted} mb-4 relative z-10`}>Pull matches via <span className={`font-black ${t.accentText}`}>CHESS.COM</span> username or paste standard PGN text for deep analysis.</p>
-                           
-                           <div className={`flex w-full rounded-xl bg-black/5 dark:bg-white/5 p-1 mb-4 border ${t.border} relative z-10`}>
-                             <button onClick={() => setAnalyzeMode('username')} className={`flex-1 py-2 text-xs font-bold rounded-lg transition-all ${analyzeMode === 'username' ? `${t.panel} shadow-sm ${t.text}` : `${t.textMuted} hover:${t.text}`}`}>Chess.com Username</button>
+
+                           <div className={`flex w-full rounded-xl bg-black/5 dark:bg-white/5 p-1 mb-3 border ${t.border} relative z-10`}>
+                             <button onClick={() => setAnalyzeMode('username')} className={`flex-1 py-2 text-xs font-bold rounded-lg transition-all ${analyzeMode === 'username' ? `${t.panel} shadow-sm ${t.text}` : `${t.textMuted} hover:${t.text}`}`}>Username</button>
                              <button onClick={() => setAnalyzeMode('pgn')} className={`flex-1 py-2 text-xs font-bold rounded-lg transition-all ${analyzeMode === 'pgn' ? `${t.panel} shadow-sm ${t.text}` : `${t.textMuted} hover:${t.text}`}`}>Paste PGN</button>
                            </div>
 
                            {analyzeMode === 'username' ? (
-                             <div className="flex gap-2 relative z-10 mt-auto">
-                               <div className="relative flex-1">
-                                 <input 
-                                   className={`w-full ${t.panel} border border-black/10 dark:border-white/10 rounded-xl py-3.5 pl-4 pr-4 ${t.text} text-sm font-bold placeholder:${t.textMuted} focus:outline-none focus:ring-2 ring-[${t.accentText.split('-')[1]}] shadow-inner transition-all`}
-                                   placeholder="Username..."
-                                   value={username} onChange={(e) => { setUsername(e.target.value); setError(""); }}
-                                   onKeyDown={(e) => e.key === 'Enter' && fetchGames()}
-                                 />
+                             <>
+                               <div className="flex flex-wrap gap-1.5 mb-3 relative z-10">
+                                 <span className={`text-[10px] font-bold uppercase tracking-wider ${t.textMuted} flex items-center gap-1 mr-1`}><Zap size={10} className={t.accentText}/> Try:</span>
+                                 {['Hikaru', 'MagnusCarlsen', 'GothamChess', 'GarryKasparov'].map(user => (
+                                   <button key={user} onClick={() => { setAnalyzeMode('username'); fetchGames(user); }}
+                                     className={`text-[10px] font-bold px-2.5 py-1 rounded-full ${t.panel} border ${t.border} ${t.text} hover:${t.accentText} hover:border-current transition-all shadow-sm flex items-center gap-1`}>
+                                     <div className="w-1 h-1 rounded-full bg-current animate-pulse"></div>{user}
+                                   </button>
+                                 ))}
                                </div>
-                               <button onClick={() => fetchGames(username)} className={`px-6 rounded-xl ${t.accent} ${appTheme==='neon'?'text-black':'text-white'} font-black tracking-widest uppercase text-sm hover:brightness-110 active:scale-95 transition-all shadow-md flex items-center justify-center`}>
-                                 {loading ? <Loader2 size={18} className="animate-spin" /> : "Go"}
+                               <input
+                                 className={`w-full ${t.panel} border border-black/10 dark:border-white/10 rounded-xl py-3.5 px-4 ${t.text} text-sm font-bold placeholder:${t.textMuted} focus:outline-none focus:ring-2 shadow-inner transition-all mb-3 relative z-10`}
+                                 placeholder="Username..."
+                                 value={username} onChange={(e) => { setUsername(e.target.value); setError(""); }}
+                                 onKeyDown={(e) => e.key === 'Enter' && fetchGames()}
+                               />
+                               <button onClick={() => fetchGames(username)} className={`w-full py-3.5 rounded-xl ${t.accent} ${appTheme==='neon'?'text-black':'text-white'} font-black tracking-widest uppercase text-sm hover:brightness-110 active:scale-95 transition-all shadow-md flex items-center justify-center relative z-10`}>
+                                 {loading ? <Loader2 size={18} className="animate-spin" /> : "Run Analysis"}
                                </button>
-                             </div>
+                             </>
                            ) : (
-                             <div className="flex flex-col gap-2 relative z-10 mt-auto">
-                                <textarea 
-                                   className={`w-full ${t.panel} border border-black/10 dark:border-white/10 rounded-xl p-3 ${t.text} text-xs font-mono placeholder:${t.textMuted} focus:outline-none focus:ring-2 ring-[${t.accentText.split('-')[1]}] shadow-inner transition-all h-16 resize-none custom-scrollbar`}
-                                   placeholder="Paste PGN text here..."
-                                   value={pgnText} onChange={(e) => { setPgnText(e.target.value); setError(""); }}
-                                />
-                                <button onClick={() => handleAnalyzePgn(pgnText)} className={`w-full py-3 rounded-xl ${t.accent} ${appTheme==='neon'?'text-black':'text-white'} font-black tracking-widest uppercase text-sm hover:brightness-110 active:scale-95 transition-all shadow-md flex items-center justify-center`}>
-                                   {loading ? <Loader2 size={18} className="animate-spin" /> : "Analyze"}
-                                </button>
-                             </div>
+                             <>
+                               <textarea
+                                 className={`w-full ${t.panel} border border-black/10 dark:border-white/10 rounded-xl p-3 ${t.text} text-xs font-mono placeholder:${t.textMuted} focus:outline-none focus:ring-2 shadow-inner transition-all resize-none custom-scrollbar mb-3 relative z-10`}
+                                 style={{height: '108px'}}
+                                 placeholder="Paste PGN text here..."
+                                 value={pgnText} onChange={(e) => { setPgnText(e.target.value); setError(""); }}
+                               />
+                               <button onClick={() => handleAnalyzePgn(pgnText)} className={`w-full py-3.5 rounded-xl ${t.accent} ${appTheme==='neon'?'text-black':'text-white'} font-black tracking-widest uppercase text-sm hover:brightness-110 active:scale-95 transition-all shadow-md flex items-center justify-center relative z-10`}>
+                                 {loading ? <Loader2 size={18} className="animate-spin" /> : "Analyze"}
+                               </button>
+                             </>
                            )}
                         </div>
 
@@ -1604,31 +1959,34 @@
                            <div className="absolute right-[-20px] top-[-20px] opacity-10 group-hover:scale-110 group-hover:rotate-12 transition-transform duration-500 pointer-events-none">
                               <Cpu size={150} />
                            </div>
-                           <div className="flex items-center gap-3 mb-4 relative z-10">
+                           <div className="flex items-center gap-3 mb-3 relative z-10">
                               <div className="w-10 h-10 rounded-xl bg-white/20 backdrop-blur-md flex items-center justify-center shadow-inner"><Gamepad2 size={20} className="text-white"/></div>
                               <h3 className="text-xl font-black text-white drop-shadow-md">Play vs NexusOS</h3>
                            </div>
-                           <p className="text-sm text-white/80 mb-6 relative z-10 drop-shadow-sm">Challenge our local web-assembly Neural Engine. Features adjustable ELO, takebacks, and hints.</p>
-                           
-                           <div className="mt-auto relative z-10">
-                              <button className="w-full py-3.5 rounded-xl bg-white text-black font-black tracking-widest uppercase text-sm hover:bg-gray-100 transition-colors shadow-lg flex items-center justify-center gap-2">
-                                 Start Match <ChevronRight size={18} strokeWidth={3}/>
-                              </button>
+                           <p className="text-sm text-white/80 mb-4 relative z-10 drop-shadow-sm">Challenge our local web-assembly Neural Engine. Features adjustable ELO, takebacks, and hints.</p>
+
+                           <div className="flex flex-col gap-2 mb-3 relative z-10">
+                             {[
+                               { icon: <Zap size={12}/>, label: 'Levels 1–15', sub: '~600 to 3200 ELO' },
+                               { icon: <Brain size={12}/>, label: 'Local Stockfish 10', sub: 'Runs in your browser' },
+                               { icon: <Shield size={12}/>, label: 'Friendly · Casual · Challenging', sub: 'Three match modes' },
+                             ].map((item, i) => (
+                               <div key={i} className="flex items-center gap-3 bg-white/10 backdrop-blur-sm rounded-xl px-3 py-2 border border-white/20">
+                                 <div className="w-6 h-6 rounded-lg bg-white/20 flex items-center justify-center text-white shrink-0">{item.icon}</div>
+                                 <div>
+                                   <div className="text-white font-bold text-xs">{item.label}</div>
+                                   <div className="text-white/60 text-[10px]">{item.sub}</div>
+                                 </div>
+                               </div>
+                             ))}
                            </div>
+
+                           <button className="w-full py-3.5 rounded-xl bg-white text-black font-black tracking-widest uppercase text-sm hover:bg-gray-100 transition-colors shadow-lg flex items-center justify-center gap-2 relative z-10 mt-auto">
+                              Start Match <ChevronRight size={18} strokeWidth={3}/>
+                           </button>
                         </div>
                      </div>
 
-                     <div className="flex flex-wrap items-center justify-center gap-3 mb-10 px-4">
-                       <span className={`text-xs font-bold uppercase tracking-wider ${t.textMuted} mr-2 flex items-center gap-1.5`}><Activity size={14} className={t.accentText} /> Live Targets:</span>
-                       {['Hikaru', 'MagnusCarlsen', 'GothamChess', 'GarryKasparov'].map(user => (
-                         <button 
-                           key={user} onClick={() => { setAnalyzeMode('username'); fetchGames(user); }}
-                           className={`text-xs font-bold px-4 py-2 rounded-full ${t.panelInner} border ${t.border} ${t.text} hover:${t.accentText} hover:border-current hover:shadow-[0_0_15px_currentColor] transition-all hover:-translate-y-1 shadow-sm cursor-pointer flex items-center gap-2`}
-                         >
-                           <div className="w-1.5 h-1.5 rounded-full bg-current animate-pulse"></div>{user}
-                         </button>
-                       ))}
-                     </div>
 
                      {error && (
                         <div className="mb-8 text-center animate-pop w-full px-4">
@@ -1717,17 +2075,43 @@
                         </div>
                      </div>
 
+                     {/* Filter bar */}
+                     <div className="flex gap-2 mb-5 flex-wrap">
+                       {[{id:'all',label:'All'},{id:'win',label:'✓ Wins'},{id:'loss',label:'✗ Losses'},{id:'draw',label:'— Draws'}].map(f => (
+                         <button key={f.id} onClick={() => setGameFilter(f.id)} className={`px-4 py-1.5 rounded-full text-xs font-bold border transition-all ${gameFilter === f.id ? `${t.accent} ${appTheme==='neon'?'text-black':'text-white'} border-transparent shadow-md` : `${t.panelInner} ${t.text} ${t.border} hover:bg-black/5 dark:hover:bg-white/5`}`}>
+                           {f.label}
+                         </button>
+                       ))}
+                       <span className={`ml-auto text-xs font-bold ${t.textMuted} flex items-center`}>
+                         {games.filter(g => {
+                           if (gameFilter === 'all') return true;
+                           const isUserWhite = g.white.username.toLowerCase() === username.toLowerCase();
+                           const r = isUserWhite ? g.white.result : g.black.result;
+                           if (gameFilter === 'win') return r === 'win';
+                           if (gameFilter === 'loss') return ['checkmated','timeout','resigned','abandoned','lose'].includes(r);
+                           if (gameFilter === 'draw') return !['win','checkmated','timeout','resigned','abandoned','lose'].includes(r);
+                           return true;
+                         }).length} games
+                       </span>
+                     </div>
+
                      <div className="grid grid-cols-1 md:grid-cols-2 gap-5 pb-10">
-                        {games.map((g, idx) => {
+                        {games.filter(g => {
+                          if (gameFilter === 'all') return true;
+                          const isUserWhite = g.white.username.toLowerCase() === username.toLowerCase();
+                          const r = isUserWhite ? g.white.result : g.black.result;
+                          if (gameFilter === 'win') return r === 'win';
+                          if (gameFilter === 'loss') return ['checkmated','timeout','resigned','abandoned','lose'].includes(r);
+                          if (gameFilter === 'draw') return !['win','checkmated','timeout','resigned','abandoned','lose'].includes(r);
+                          return true;
+                        }).map((g, idx) => {
                           const date = new Date(g.end_time * 1000);
                           const isUserWhite = g.white.username.toLowerCase() === username.toLowerCase();
                           const userResult = isUserWhite ? g.white.result : g.black.result;
                           
                           let resultText = 'Draw';
                           let ResultIcon = Minus;
-                          let resultStyle = appTheme === 'light' 
-                            ? `bg-gray-200 text-gray-700 border border-gray-300` 
-                            : `bg-white/5 text-gray-400 border-transparent`;
+                          let resultStyle = appTheme === 'light' ? `bg-gray-200 text-gray-700 border border-gray-300` : `bg-white/5 text-gray-400 border-transparent`;
                           let stickerIcon = Minus;
                           let stickerColor = 'text-gray-400';
                           
@@ -1812,15 +2196,30 @@
 
                     <div className="space-y-8">
                        <div>
-                          <div className="flex justify-between items-end mb-4">
-                             <label className={`text-xs font-black uppercase tracking-wider ${t.textMuted}`}>Engine Level <span className={`ml-2 text-lg ${t.text}`}>{playConfig.level}</span></label>
+                          <label className={`text-xs font-black uppercase tracking-wider ${t.textMuted} mb-3 block`}>Your Name</label>
+                          <input
+                            className={`w-full ${t.panelInner} border ${t.border} rounded-xl py-3 px-4 ${t.text} text-sm font-bold placeholder:font-normal focus:outline-none focus:ring-2 transition-all`}
+                            placeholder="Enter your name (optional)"
+                            value={playerName}
+                            onChange={(e) => setPlayerName(e.target.value)}
+                            maxLength={20}
+                          />
+                       </div>
+                       <div>
+                          <div className="flex justify-between items-end mb-3">
+                             <label className={`text-xs font-black uppercase tracking-wider ${t.textMuted}`}>Engine Level <span className={`ml-2 text-lg ${t.text} font-mono`}>{playConfig.level}</span></label>
                              <div className="text-right">
                                <span className={`text-[10px] font-bold uppercase tracking-wider ${t.textMuted}`}>Est. Rating</span>
                                <div className={`text-lg font-mono font-black ${t.accentText}`}>{getBotElo(playConfig.level)}</div>
                              </div>
                           </div>
-                          <div className="relative pt-2">
+                          <div className="relative">
                              <input type="range" min="1" max="15" value={playConfig.level} onChange={(e) => setPlayConfig({...playConfig, level: parseInt(e.target.value)})} style={{'--accent-color': appTheme === 'neon' ? '#06b6d4' : '#81b64c'}}/>
+                             <div className="flex justify-between mt-1">
+                               {['Beginner','Intermediate','Advanced','Expert','Master'].map((lbl,i) => (
+                                 <span key={i} className={`text-[9px] font-bold ${t.textMuted} opacity-60`}>{lbl}</span>
+                               ))}
+                             </div>
                           </div>
                        </div>
 
@@ -1878,7 +2277,7 @@
                  </div>
               </div>
             ) : view === "playing" ? (
-              <div className="flex flex-col lg:flex-row gap-6 lg:gap-10 w-full max-w-6xl mx-auto justify-center items-start animate-fade-in px-4">
+              <div className="flex flex-col lg:flex-row gap-6 lg:gap-10 w-full max-w-[1600px] mx-auto justify-center items-start animate-fade-in px-4 lg:px-8 py-4">
                  
                  {/* GAME OVER OVERLAY */}
                  {playGameStatus && (
@@ -1906,36 +2305,8 @@
                     </div>
                  )}
 
-                 {/* LEFT PANEL: Live Match Moves (Moves to bottom on phone) */}
-                 <div className={`order-2 lg:order-1 w-full lg:w-[300px] xl:w-[350px] ${t.panel} rounded-2xl flex flex-col h-[350px] lg:h-[calc(100vh-8rem)] lg:sticky lg:top-20 overflow-hidden border ${t.border} shadow-2xl shrink-0 mt-6 lg:mt-0`}>
-                    <div className={`p-4 border-b ${t.border} bg-black/5 dark:bg-white/5`}>
-                       <h3 className={`text-xs font-black uppercase tracking-widest ${t.text} flex items-center gap-2`}><Activity size={14} className={t.accentText} /> Match Live Log</h3>
-                    </div>
-                    
-                    <div className="flex-1 overflow-y-auto p-4 custom-scrollbar">
-                       <div className="flex flex-wrap gap-1.5 content-start">
-                          {playMovePairs.length === 0 ? (
-                             <div className={`text-xs font-medium italic ${t.textMuted} mt-4 text-center w-full`}>Awaiting first move...</div>
-                          ) : (
-                             playMovePairs.map((pair, idx) => (
-                                <React.Fragment key={idx}>
-                                   <div className={`text-[11px] px-2 py-1.5 rounded-lg border bg-black/5 dark:bg-white/5 border-black/5 dark:border-white/5 ${t.text} shadow-sm flex items-center gap-1`}>
-                                      <span className={t.textMuted}>{idx + 1}.</span> {formatSan(pair.w.san)}
-                                   </div>
-                                   {pair.b && (
-                                      <div className={`text-[11px] px-2 py-1.5 rounded-lg border bg-black/5 dark:bg-white/5 border-black/5 dark:border-white/5 ${t.text} shadow-sm flex items-center gap-1`}>
-                                         {formatSan(pair.b.san)}
-                                      </div>
-                                   )}
-                                </React.Fragment>
-                             ))
-                          )}
-                       </div>
-                    </div>
-                 </div>
-
                  {/* CENTER PANEL: Board */}
-                 <div className="order-1 lg:order-2 flex flex-col items-center justify-start w-full lg:flex-1 lg:max-w-[70vh] xl:max-w-[75vh]">
+                 <div className="order-1 lg:order-1 flex flex-col items-center justify-start w-full lg:flex-1 lg:max-w-[70vh] xl:max-w-[85vh]">
                     <div className="flex w-full justify-center items-stretch my-2 md:my-4 flex-col">
                       
                       <PlayerBanner 
@@ -1947,7 +2318,7 @@
                         isBottom={false} isPlayMode={true} t={t} isFlipped={false}
                       />
 
-                      <div className="w-full aspect-square rounded shadow-2xl relative select-none shrink-0 border-4 border-transparent ring-2 ring-black/10 dark:ring-white/10 my-2">
+                      <div className="w-full aspect-square rounded shadow-2xl relative select-none shrink-0 border-4 border-transparent ring-2 ring-black/10 dark:ring-white/10 my-2 bg-black">
                         <div className="grid grid-cols-8 grid-rows-8 w-full h-full absolute inset-0 z-0 rounded overflow-hidden">
                           {Array.from({length: 64}).map((_, i) => {
                             const visualRow = Math.floor(i / 8);
@@ -2006,41 +2377,30 @@
                           })()).map((p, idx) => {
                             const coords = getSquareCoordinates(p.sq);
                             const isDragging = dragState && dragState.startSq === p.sq;
-                            let tx = 0, ty = 0;
                             let tClass = fastAnimations ? "" : "piece-animate";
                             let zClass = "z-20";
-                            
-                            if (isDragging) {
-                               tx = dragState.curX - dragState.startX; ty = dragState.curY - dragState.startY;
-                               tClass = "piece-drag"; zClass = "z-50";
-                            } else if (selectedSquare === p.sq) {
-                               ty = -4; 
-                            }
+                            let initialTransform = `scale(0.95)`;
+                            if (isDragging) { tClass = "piece-drag"; zClass = "z-50"; initialTransform = `scale(1.15)`; }
+                            else if (selectedSquare === p.sq) { initialTransform = `translate(0px,-4px) scale(1.15)`; }
 
                             let kingStatus = null;
                             if (playGameStatus && p.type === 'k') {
-                               if (playGameStatus === 'win') {
-                                  kingStatus = p.color === playPlayerColor ? '🏆' : '💀';
-                               } else if (playGameStatus === 'loss') {
-                                  kingStatus = p.color === playPlayerColor ? '💀' : '🏆';
-                               } else if (playGameStatus === 'draw') {
-                                  kingStatus = '🤝';
-                               }
+                               if (playGameStatus === 'win') kingStatus = p.color === playPlayerColor ? '🏆' : '💀';
+                               else if (playGameStatus === 'loss') kingStatus = p.color === playPlayerColor ? '💀' : '🏆';
+                               else if (playGameStatus === 'draw') kingStatus = '🤝';
                             }
 
                             return (
                               <React.Fragment key={`${p.id}_${idx}`}>
-                                <img 
+                                <img ref={isDragging ? dragElemRef : null}
                                   src={`https://images.chesscomfiles.com/chess-themes/pieces/${pieceSet}/150/${p.color}${p.type}.png`}
                                   className={`absolute w-[12.5%] h-[12.5%] drop-shadow-md pointer-events-none ${tClass} ${zClass}`}
-                                  style={{ left: `${coords.x - 6.25}%`, top: `${coords.y - 6.25}%`, transform: `translate(${tx}px, ${ty}px) scale(${isDragging || selectedSquare === p.sq ? 1.15 : 0.95})`, opacity: blindfoldMode ? 0 : 1 }}
+                                  style={{ left: `${coords.x - 6.25}%`, top: `${coords.y - 6.25}%`, transform: initialTransform, opacity: blindfoldMode ? 0 : 1 }}
                                   alt={`${p.color}${p.type}`} draggable={false}
                                 />
                                 {kingStatus && (
-                                  <div 
-                                    className="absolute flex items-center justify-center pointer-events-none z-50 text-3xl drop-shadow-xl animate-pop"
-                                    style={{ left: `${coords.x - 6.25}%`, top: `${coords.y - 12}%`, width: '12.5%', height: '12.5%', transform: `translate(${tx}px, ${ty}px)` }}
-                                  >
+                                  <div className="absolute flex items-center justify-center pointer-events-none z-50 text-3xl drop-shadow-xl animate-pop"
+                                    style={{ left: `${coords.x - 6.25}%`, top: `${coords.y - 12}%`, width: '12.5%', height: '12.5%' }}>
                                     {kingStatus}
                                   </div>
                                 )}
@@ -2080,8 +2440,8 @@
                     </div>
 
                     <PlayerBanner 
-                      name={playPlayerColor === 'w' ? 'Guest' : `NexusOS AI Lvl ${playConfig.level}`} 
-                      rating={playPlayerColor === 'w' ? 1200 : getBotElo(playConfig.level)}
+                      name={playerName || 'Guest'} 
+                      rating={1200}
                       capturedPieces={playPlayerColor === 'w' ? playMat.blackCapturedList : playMat.whiteCapturedList}
                       advantage={playPlayerColor === 'w' ? playMat.blackAdvantage : playMat.whiteAdvantage}
                       clock={formatPlayClock(playPlayerColor === 'w' ? playClocks.w : playClocks.b)}
@@ -2097,7 +2457,7 @@
                            </button>
                            {playConfig.mode === 'friendly' && (
                              <button onClick={requestHint} disabled={playGameStatus || playBoard.turn() !== playPlayerColor || isHintLoading} className={`flex-1 py-3.5 rounded-xl border ${t.border} ${t.panelInner} ${t.text} text-xs font-bold uppercase tracking-wider hover:bg-black/5 dark:hover:bg-white/5 disabled:opacity-30 transition-all shadow-sm flex items-center justify-center gap-2`}>
-                                {isHintLoading ? <Loader2 size={16} className="animate-spin text-[#06b6d4]" /> : <Lightbulb size={16} className={t.accentText} />} {isHintLoading ? 'Thinking' : 'Hint'}
+                                {isHintLoading ? <Loader2 size={16} className="animate-spin text-[#06b6d4]" /> : <Lightbulb size={16} className={t.accentText} />} {isHintLoading ? 'Thinking...' : 'Hint'}
                              </button>
                            )}
                          </>
@@ -2109,12 +2469,40 @@
 
                  </div>
 
+                 {/* RIGHT PANEL: Live Match Moves */}
+                 <div className={`order-2 lg:order-2 w-full lg:w-[350px] xl:w-[400px] 2xl:w-[450px] ${t.panel} rounded-2xl flex flex-col h-[350px] lg:h-[min(85vh,900px)] lg:sticky lg:top-20 overflow-hidden border ${t.border} shadow-2xl shrink-0 mt-6 lg:mt-0`}>
+                    <div className={`p-4 border-b ${t.border} bg-black/5 dark:bg-white/5`}>
+                       <h3 className={`text-xs font-black uppercase tracking-widest ${t.text} flex items-center gap-2`}><Activity size={14} className={t.accentText} /> Match Live Log</h3>
+                    </div>
+                    
+                    <div className="flex-1 overflow-y-auto p-4 custom-scrollbar">
+                       <div className="flex flex-wrap gap-1.5 content-start">
+                          {playMovePairs.length === 0 ? (
+                             <div className={`text-xs font-medium italic ${t.textMuted} mt-4 text-center w-full`}>Awaiting first move...</div>
+                          ) : (
+                             playMovePairs.map((pair, idx) => (
+                                <React.Fragment key={idx}>
+                                   <div className={`text-[11px] px-2 py-1.5 rounded-lg border bg-black/5 dark:bg-white/5 border-black/5 dark:border-white/5 ${t.text} shadow-sm flex items-center gap-1`}>
+                                      <span className={t.textMuted}>{idx + 1}.</span> {formatSan(pair.w.san, 'w')}
+                                   </div>
+                                   {pair.b && (
+                                      <div className={`text-[11px] px-2 py-1.5 rounded-lg border bg-black/5 dark:bg-white/5 border-black/5 dark:border-white/5 ${t.text} shadow-sm flex items-center gap-1`}>
+                                         {formatSan(pair.b.san, 'b')}
+                                      </div>
+                                   )}
+                                </React.Fragment>
+                             ))
+                          )}
+                       </div>
+                    </div>
+                 </div>
+
               </div>
             ) : view === "workspace" ? (
-              <div className="flex flex-col lg:flex-row gap-4 lg:gap-8 w-full max-w-6xl mx-auto justify-center items-start animate-fade-in">
+              <div className="flex flex-col lg:flex-row gap-4 lg:gap-8 w-full max-w-[1600px] mx-auto justify-center items-start animate-fade-in px-4 lg:px-8 py-2">
                 
                 {/* --- Left Column: Chess Board Area --- */}
-                <div className="flex flex-col items-center justify-start w-full lg:flex-1 lg:max-w-[70vh] xl:max-w-[75vh]">
+                <div className="flex flex-col items-center justify-start w-full lg:flex-1 lg:max-w-[70vh] xl:max-w-[85vh]">
                   
                   <div className="flex w-full justify-center items-stretch my-2 md:my-4 flex-col">
                     <PlayerBanner 
@@ -2129,16 +2517,26 @@
                     <div className="flex w-full justify-center items-stretch mt-2 mb-2 relative">
                       {showEvalBar && (
                         <div className={`w-4 md:w-6 ${t.panelInner} mr-2 md:mr-3 rounded overflow-hidden flex flex-col relative border ${t.border} shadow-inner shrink-0`}>
-                          {deepAnalyzing && (
-                            <div className="absolute inset-0 z-30 bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0IiBoZWlnaHQ9IjQiPgo8cmVjdCB3aWR0aD0iNCIgaGVpZ2h0PSI0IiBmaWxsPSIjZmZmIiBmaWxsLW9wYWNpdHk9IjAuMSIvPgo8L3N2Zz4=')] opacity-50 animate-pulse"></div>
-                          )}
-                          <div className="w-full bg-black eval-animate" style={{ height: `${Math.max(5, Math.min(95, 50 + (evaluation * 5)))}%`, filter: deepAnalyzing ? 'blur(1px)' : 'none' }}></div>
-                          <div className="w-full bg-white flex-1 eval-animate" style={{ filter: deepAnalyzing ? 'blur(1px)' : 'none' }}></div>
-                          {!deepAnalyzing && <span className={`absolute ${evaluation > 0 ? 'bottom-1 text-black' : 'top-1 text-white'} w-full text-center text-[9px] md:text-[10px] font-bold z-20`}>{Math.abs(evaluation).toFixed(1)}</span>}
+                          {(() => {
+                            // Sigmoid-style: maps eval to 0-100%, centered at 50%
+                            // ±1 pawn ≈ 60/40, ±3 ≈ 75/25, ±10 ≈ 90/10, mate = 95/5
+                            const clampedEval = Math.max(-15, Math.min(15, evaluation));
+                            const blackPct = Math.round(50 - (Math.atan(clampedEval * 0.35) / Math.PI) * 100);
+                            const safePct = Math.max(5, Math.min(95, blackPct));
+                            return (
+                              <>
+                                <div className="w-full bg-black eval-animate" style={{ height: `${safePct}%` }}></div>
+                                <div className="w-full bg-white flex-1 eval-animate"></div>
+                                <span className={`absolute ${evaluation <= 0 ? 'top-1 text-white' : 'bottom-1 text-black'} w-full text-center text-[9px] md:text-[10px] font-bold z-20`}>
+                                  {evaluation >= 100 ? 'M' : evaluation <= -100 ? 'M' : Math.abs(evaluation).toFixed(1)}
+                                </span>
+                              </>
+                            );
+                          })()}
                         </div>
                       )}
 
-                      <div className="w-full aspect-square rounded shadow-2xl relative select-none shrink-0 border-4 border-transparent ring-2 ring-black/10 dark:ring-white/5">
+                      <div className="w-full aspect-square rounded shadow-2xl relative select-none shrink-0 border-4 border-transparent ring-2 ring-black/10 dark:ring-white/5 bg-black">
                         
                         <div className="grid grid-cols-8 grid-rows-8 w-full h-full absolute inset-0 z-0 rounded overflow-hidden">
                           {Array.from({length: 64}).map((_, i) => {
@@ -2176,7 +2574,7 @@
                               <feDropShadow dx="1" dy="2" stdDeviation="2" floodOpacity="0.5" />
                             </filter>
                           </defs>
-                          {!deepAnalyzing && bestMove && bestMove.length >= 4 && activeTab !== 'details' && (
+                          {bestMove && bestMove.length >= 4 && activeTab !== 'details' && (
                             <line 
                               x1={`${getSquareCoordinates(bestMove.substring(0,2)).x}%`} y1={`${getSquareCoordinates(bestMove.substring(0,2)).y}%`}
                               x2={`${getSquareCoordinates(bestMove.substring(2,4)).x}%`} y2={`${getSquareCoordinates(bestMove.substring(2,4)).y}%`}
@@ -2189,23 +2587,16 @@
                           {animatedPieces.map(p => {
                             const coords = getSquareCoordinates(p.sq);
                             const isDragging = dragState && dragState.startSq === p.sq && currentBoard.get(p.sq)?.color === currentBoard.turn();
-                            
-                            let tx = 0, ty = 0;
                             let tClass = fastAnimations ? "" : "piece-animate";
                             let zClass = "z-20";
-                            
-                            if (isDragging) {
-                               tx = dragState.curX - dragState.startX; ty = dragState.curY - dragState.startY;
-                               tClass = "piece-drag"; zClass = "z-50";
-                            } else if (selectedSquare === p.sq) {
-                               ty = -4; 
-                            }
-
+                            let initialTransform = `scale(0.95)`;
+                            if (isDragging) { tClass = "piece-drag"; zClass = "z-50"; initialTransform = `scale(1.15)`; }
+                            else if (selectedSquare === p.sq) { initialTransform = `translate(0px,-4px) scale(1.15)`; }
                             return (
-                              <img 
-                                key={p.id} src={`https://images.chesscomfiles.com/chess-themes/pieces/${pieceSet}/150/${p.color}${p.type}.png`}
+                              <img key={p.id} ref={isDragging ? dragElemRef : null}
+                                src={`https://images.chesscomfiles.com/chess-themes/pieces/${pieceSet}/150/${p.color}${p.type}.png`}
                                 className={`absolute w-[12.5%] h-[12.5%] drop-shadow-md pointer-events-none ${tClass} ${zClass}`}
-                                style={{ left: `${coords.x - 6.25}%`, top: `${coords.y - 6.25}%`, transform: `translate(${tx}px, ${ty}px) scale(${isDragging || selectedSquare === p.sq ? 1.15 : 0.95})`, opacity: blindfoldMode ? 0 : 1 }}
+                                style={{ left: `${coords.x - 6.25}%`, top: `${coords.y - 6.25}%`, transform: initialTransform, opacity: blindfoldMode ? 0 : 1 }}
                                 alt={`${p.color}${p.type}`} draggable={false}
                               />
                             );
@@ -2214,24 +2605,35 @@
 
                         <div className="absolute inset-0 w-full h-full pointer-events-none z-30">
                           {currentMoveIndex >= 0 && history[currentMoveIndex] && (
-                            (!history[currentMoveIndex].quality || (deepAnalyzing && history[currentMoveIndex].isBranch)) ? (
-                              <div 
-                                className={`absolute w-[22px] h-[22px] md:w-[26px] md:h-[26px] transition-all flex items-center justify-center pointer-events-none z-40`}
-                                style={{ left: `${getSquareCoordinates(history[currentMoveIndex].to).x + 5.5}%`, top: `${getSquareCoordinates(history[currentMoveIndex].to).y - 5.5}%`, transform: 'translate(-50%, -50%)' }}
-                              >
-                                 <div className="piece-loader" style={{'--p-color1': appTheme === 'light' ? '#333' : '#fff', '--p-color2': '#22c55e' }}></div>
-                              </div>
-                            ) : history[currentMoveIndex].quality && (
-                              <div 
-                                key={`live_badge_${currentMoveIndex}_${history[currentMoveIndex].quality.id}`}
-                                className="absolute w-[22px] h-[22px] md:w-[26px] md:h-[26px] rounded-full flex items-center justify-center text-white font-black border-[2px] border-white shadow-xl transition-colors duration-300 animate-pop z-40"
-                                style={{ backgroundColor: history[currentMoveIndex].quality.color, left: `${getSquareCoordinates(history[currentMoveIndex].to).x + 5.5}%`, top: `${getSquareCoordinates(history[currentMoveIndex].to).y - 5.5}%`, transform: 'translate(-50%, -50%)' }}
-                              >
-                                <span className="flex items-center justify-center leading-none tracking-tighter" style={{ fontSize: history[currentMoveIndex].quality.icon.length > 1 ? '10px' : '14px' }}>
-                                  {history[currentMoveIndex].quality.icon}
-                                </span>
-                              </div>
-                            )
+                            (() => {
+                              const move = history[currentMoveIndex];
+                              const coords = getSquareCoordinates(move.to);
+                              // Both badge and loader use the SAME position: top-right corner of destination square
+                              const posStyle = {
+                                left: `${coords.x + 4.5}%`,
+                                top: `${coords.y - 4.5}%`,
+                                transform: 'translate(-50%, -50%)'
+                              };
+                              const isLoading = (!move.quality || (deepAnalyzing && move.isBranch));
+                              return (
+                                <div 
+                                  className="absolute w-[22px] h-[22px] md:w-[26px] md:h-[26px] rounded-full flex items-center justify-center shadow-xl pointer-events-none z-40 transition-all duration-200"
+                                  style={{
+                                    ...posStyle,
+                                    backgroundColor: isLoading ? 'rgba(0,0,0,0.80)' : move.quality?.color,
+                                    border: '2px solid rgba(255,255,255,0.6)',
+                                  }}
+                                >
+                                  {isLoading ? (
+                                    <div className="piece-loader" style={{ '--p-color1': appTheme === 'neon' ? '#06b6d4' : '#ffffff', '--p-color2': appTheme === 'neon' ? '#a855f7' : '#cccccc' }}></div>
+                                  ) : (
+                                    <span className="flex items-center justify-center leading-none tracking-tighter text-white font-black animate-pop" style={{ fontSize: move.quality?.icon?.length > 1 ? '10px' : '14px' }}>
+                                      {move.quality?.icon}
+                                    </span>
+                                  )}
+                                </div>
+                              );
+                            })()
                           )}
                         </div>
 
@@ -2272,7 +2674,7 @@
                   </div>
                 </div>
 
-                <div className={`w-full lg:w-[350px] xl:w-[400px] flex flex-col h-[500px] lg:h-[min(80vh,800px)] rounded-2xl ${t.panel} border ${t.border} shadow-2xl shrink-0 mt-6 lg:mt-0 overflow-hidden`}>
+                <div className={`w-full lg:w-[450px] xl:w-[500px] 2xl:w-[600px] flex flex-col h-[500px] lg:h-[min(85vh,900px)] rounded-2xl ${t.panel} border ${t.border} shadow-2xl shrink-0 mt-6 lg:mt-0 overflow-hidden`}>
                   
                   <div className={`flex border-b ${t.border} shrink-0`}>
                      <button onClick={()=>setActiveTab('report')} className={`flex-1 py-4 text-xs uppercase font-bold border-b-2 ${activeTab==='report'?`border-[${t.accentText.split('-')[1]}] ${t.text}`:`border-transparent ${t.textMuted} hover:${t.text}`}`}>Report</button>
@@ -2379,7 +2781,7 @@
                                  className={`cursor-pointer flex items-center gap-1 text-[11px] px-2 py-1.5 rounded-lg border ${currentMoveIndex === i ? `bg-[${t.accentText.split('-')[1]}]/20 border-[${t.accentText.split('-')[1]}]` : `bg-black/5 dark:bg-white/5 border-black/5 dark:border-white/5`} hover:border-gray-400 transition-colors shadow-sm`}
                                >
                                   <span className={t.textMuted}>{m.color==='w' ? `${Math.floor(i/2)+1}.` : ''}</span>
-                                  <span className={`${t.text} font-bold`}>{formatSan(m.san)}</span>
+                                  <span className={`${t.text} font-bold`}>{formatSan(m.san, m.color)}</span>
                                   {m.quality && m.quality.id !== 'ok' && m.quality.id !== 'theoretical' && (
                                     <span style={{color: m.quality.color}} className="font-black text-[10px] ml-0.5 tracking-tighter">{m.quality.icon}</span>
                                   )}
@@ -2397,16 +2799,12 @@
                           <div className="flex items-center justify-between z-10 relative mb-1">
                              <div className="flex items-center gap-4">
                                <span className={`text-4xl font-mono font-black ${t.text} ${analyzing ? 'opacity-90' : ''}`}>
-                                 {deepAnalyzing ? (
-                                   <span className="flex items-center gap-2 text-2xl text-cyan-500 animate-pulse"><Loader2 size={24} className="animate-spin" /> Eval...</span>
-                                 ) : (
-                                   evaluation > 0 ? `+${Number(evaluation).toFixed(2)}` : Number(evaluation).toFixed(2)
-                                 )}
+                                 {evaluation > 0 ? `+${Number(evaluation).toFixed(2)}` : Number(evaluation).toFixed(2)}
                                </span>
                              </div>
                              <div className="flex flex-col items-end text-right">
                                <span className={`text-sm font-bold ${t.text}`}>Depth <span className="text-[#f3ae16]">{engineDepth || '--'}</span></span>
-                               <span className={`text-[10px] ${t.textMuted} font-bold mt-1 tracking-wide`}>SF 10.0 WASM</span>
+                               <span className={`text-[10px] ${t.textMuted} font-bold mt-1 tracking-wide`}>{ENGINE_PRESETS.find(p=>p.id===enginePreset)?.label || 'Fast'} · SF10</span>
                              </div>
                           </div>
                           
@@ -2429,11 +2827,7 @@
                           <h4 className={`text-xs font-black uppercase mb-4 flex items-center gap-2 ${t.textMuted}`}>
                             <Activity size={14} /> Engine Top Lines
                           </h4>
-                          {deepAnalyzing ? (
-                            <div className={`flex flex-col items-center justify-center py-6 gap-3 ${t.textMuted} text-xs font-medium uppercase tracking-widest animate-pulse`}>
-                               <Brain size={24} className="text-cyan-500 opacity-50" /> Processing Variation...
-                            </div>
-                          ) : engineLines.filter(Boolean).length > 0 ? (
+                          {engineLines.filter(Boolean).length > 0 ? (
                             <div className="space-y-2">
                               {engineLines.filter(Boolean).map((line, i) => (
                                 <div 
@@ -2443,7 +2837,7 @@
                                   <span className={`w-12 text-center font-mono text-xs font-bold ${Number(line.eval) >= 0 ? 'text-green-500' : 'text-red-500'}`}>
                                     {Number(line.eval) > 0 ? `+${Number(line.eval).toFixed(2)}` : Number(line.eval).toFixed(2)}
                                   </span>
-                                  <span className={`font-bold text-sm flex items-center gap-1 ${t.text} group-hover:${t.accentText} transition-colors`}>{formatSan(line.move)}</span>
+                                  <span className={`font-bold text-sm flex items-center gap-1 ${t.text} group-hover:${t.accentText} transition-colors`}>{formatSan(line.move, currentBoard.turn())}</span>
                                   {i===0 && <span className={`text-[9px] uppercase font-black px-2 py-0.5 rounded ${t.accent} ${appTheme==='neon'?'text-black':'text-white'} ml-auto`}>Best</span>}
                                 </div>
                               ))}
@@ -2470,7 +2864,15 @@
                            ))}
                          </div>
                          <div className={`p-4 rounded-xl border ${t.border} ${t.panelInner}`}>
-                           <h4 className={`text-xs font-black uppercase mb-2 ${t.textMuted}`}>Raw PGN</h4>
+                           <div className="flex items-center justify-between mb-2">
+                             <h4 className={`text-xs font-black uppercase ${t.textMuted}`}>Raw PGN</h4>
+                             <button
+                               onClick={() => { navigator.clipboard.writeText(fullGame.pgn()); }}
+                               className={`text-[10px] font-bold px-3 py-1 rounded-lg border ${t.border} ${t.text} hover:${t.accentText} hover:border-current transition-all flex items-center gap-1.5`}
+                             >
+                               <FileText size={11}/> Copy PGN
+                             </button>
+                           </div>
                            <p className={`text-[10px] ${t.textMuted} font-mono break-all leading-relaxed`}>
                              {fullGame.pgn()}
                            </p>
